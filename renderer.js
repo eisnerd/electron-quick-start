@@ -12,10 +12,10 @@ var low = Math.min(...pitches), high = Math.max(...pitches);
 var t = Math.min(...seq.map(x => x.playTime)) - 500;
 
 var scale = 20;
-var gap = 1;
+var gap = 4;
 var note = scale - gap * 2;
 
-var draw = SVG('drawing').size(30000, (high-low+12)*scale);
+var draw = SVG('drawing').size((Math.max(...seq.map(x => x.playTime))-t+1000)/900*scale, (high-low+12)*scale);
 var stave = draw.group();
 
 var degrees = [1, 1.5, 2, 2.5, 3, 4, 4.5, 5, 5.5, 6, 6.5, 7];
