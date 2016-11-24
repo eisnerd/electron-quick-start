@@ -20,6 +20,8 @@
     "electron": "^1.4.1"
   },
   "dependencies": {
+    "easymidi": "0.0.2",
+    "midi": "^0.9.5",
     "midifile": "^1.0.4",
     "svg.js": "^2.3.6"
   }
