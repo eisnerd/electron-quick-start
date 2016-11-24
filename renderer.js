@@ -3,11 +3,14 @@ var score = false;
 
 var fs = require("fs");
 var MIDIFile = require("midifile");
+var MIDIPlayer = require("./MIDIPlayer.js");
 var SVG = require("svg.js");
 
 var midis = [{
   name: "Amazing Grace",
-  file: "amazing.mid",
+  music: "amazing.mid",
+  trainer: x => x.track == 1,
+  playback: x => x.track == 1 || x.track == 4,
   offset: -1,
   notes: 32
 }];
@@ -15,18 +18,24 @@ var midis = [{
 var current_midi = midis[0];
 var offset = current_midi.offset;
 
-var midi = new MIDIFile(fs.readFileSync(current_midi.file).buffer);
+var midi = new MIDIFile(fs.readFileSync(current_midi.music).buffer);
 
-var seq = midi.getMidiEvents().filter(x => x.subtype == 9 && x.track == 1).filter((x, i) => !game || i < current_midi.notes);
+var seq = midi.getMidiEvents().filter(x => x.subtype == 9 && current_midi.trainer(x)).filter((x, i) => !game || i < current_midi.notes);
 var pitches = seq.map(x => x.param1 + offset);
 var low = Math.min(...pitches), high = 96, _high = Math.max(...pitches);
-var t = Math.min(...seq.map(x => x.playTime)) - 2000;
+var t = Math.min(...seq.map(x => x.playTime)) - 2000, tmax = Math.max(...seq.map(x => x.playTime));
+
+var i = 0;
+var playback = midi.getMidiEvents()
+  .filter(x => (x.subtype == 9 && x.playTime <= tmax || x.subtype == 8 && x.playTime <= tmax + 3000) && current_midi.playback(x))
+  .map(x => { x.param1 += offset; x.playTime -= t + 2000; return x; });
+midi.getMidiEvents = () => playback;
 
 var scale = 20;
 var gap = 4;
 var note = scale - gap * 2;
 
-var draw = SVG('drawing').size((Math.max(...seq.map(x => x.playTime))-t+1000)/900*scale, game ? window.outerHeight : (high - low + 12)*7/12*scale);
+var draw = SVG('drawing').size((tmax-t+1000)/900*scale, game ? window.outerHeight : (high - low + 12)*7/12*scale);
 var stave = draw.group();
 
 var degrees = [1, 1.5, 2, 2.5, 3, 4, 4.5, 5, 5.5, 6, 6.5, 7];
@@ -85,9 +94,37 @@ var markers = draw.group();
 var last_marker;
 var gamereset = () => {
   state = -1;
+  last_marker = null;
   markers.remove();
+  markers = draw.group();
   gamecheck(0);
 };
+var playing = false;
+var gameplayback = () => {
+  if (playing)
+    return;
+  playing = true;
+  navigator.requestMIDIAccess().then(function(midiAccess) {
+    // Creating player
+    var midiPlayer = new MIDIPlayer({
+      'outputs': Array.from(midiAccess.outputs.values()).filter(x => x.name == "score" || /usb|tim.*0/i.exec(x.name))
+    });
+
+    // Loading the midiFile instance in the player
+    midiPlayer.load(midi);
+
+    // Playing
+    midiPlayer.play(function() {
+        marker.opacity(1);
+        gamereset();
+        playing = false;
+    });
+
+  }, function() {
+      console.log('No midi output');
+  });
+};
+//gameplayback();
 var gamecheck = x => {
   if (!game)
     return;
@@ -97,8 +134,21 @@ var gamecheck = x => {
       velocity: 0,
       channel: 10
     });
-  if (state == -1 || x.velocity > 0 && x.note == seq[state].param1 + offset) {
-    state = (state + 1) % seq.length;
+  if (state == -1 || state < seq.length && x.velocity > 0 && x.note == seq[state].param1 + offset) {
+    if (++state == seq.length) {
+      if (last_marker) {
+        last_marker.fx.stop();
+        last_marker.opacity(0.3);
+        markers.add(last_marker);
+      }
+      if (!playing)
+        window.setTimeout(() => {
+          marker.opacity(0);
+          gamereset();
+          gameplayback();
+        }, 1000);
+      return;
+    }
 
     if (x)
       synth.send('noteon', {
@@ -146,7 +196,8 @@ if (usbout.length) {
   var mo = new mio.Output(usbout[0], false);
   var usbin = mio.getInputs().filter(/ /.exec.bind(/usb/i));
   if (usbin.length) {
-    var mi = new mio.Input(usbin[0], false);
+    var mi = new mio.Input("score", true);
+    var mu = new mio.Input(usbin[0], false);
     chord = {};
     anim = new Set();
     var paused = false;
@@ -166,7 +217,7 @@ if (usbout.length) {
         });
       paused = false;
     };
-    mi.on('noteon', x => {
+    var noteon = x => {
       var p = x.note;
       if (!gamecheck(x) && x.velocity > 0) {
         var n = p % 12;
@@ -195,7 +246,9 @@ if (usbout.length) {
           delete chord[p];
         }
       }
-    });
+    };
+    mi.on('noteon', noteon);
+    mu.on('noteon', noteon);
     window.onbeforeunload = function (e) {
       console.log("cleaning up");
       mo.close();
