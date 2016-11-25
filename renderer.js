@@ -86,7 +86,7 @@ seq.map(x => {
 });
 
 var mio = require("easymidi");
-var synth = new mio.Output("synth", true);
+var synths = [new mio.Output("synth", true)];
 
 chordTime = window.outerWidth - scale;
 var state = -1;
@@ -138,12 +138,23 @@ var gamecheck = x => {
   if (!game)
     return;
   if (x && x.velocity == 0)
-    synth.send('noteoff', {
-      note: x.note,
-      velocity: 0,
-      channel: 10
-    });
+    synths.forEach(synth =>
+      synth.send('noteoff', {
+        note: x.note,
+        velocity: 0,
+        channel: 0
+      })
+    );
   if (state == -1 || state < seq.length && x.velocity > 0 && x.note == seq[state].param1 + offset) {
+    if (x)
+      synths.forEach(synth =>
+        synth.send('noteon', {
+          note: x.note,
+          velocity: 127,
+          channel: 0
+        })
+      );
+
     if (++state == seq.length) {
       if (last_marker) {
         last_marker.fx.stop();
@@ -159,12 +170,6 @@ var gamecheck = x => {
       return;
     }
 
-    if (x)
-      synth.send('noteon', {
-        note: x.note,
-        velocity: 127,
-        channel: 10
-      });
 
     var x = seq[state];
     chordTime = (x.playTime - t)*tadj;
@@ -203,6 +208,7 @@ if (score && !game) {
 var usbout = mio.getOutputs().filter(/ /.exec.bind(/usb/i));
 if (usbout.length) {
   var mo = new mio.Output(usbout[0], false);
+  synths.push(mo);
   var usbin = mio.getInputs().filter(/ /.exec.bind(/usb/i));
   if (usbin.length) {
     var mi = new mio.Input("score", true);
