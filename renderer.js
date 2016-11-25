@@ -12,10 +12,18 @@ var midis = [{
   trainer: x => x.track == 1,
   playback: x => x.track == 1 || x.track == 4,
   offset: -1,
-  notes: 32
+  notes: 32,
+  tempo: 0.53
+}, {
+  name: "Mary had a Little Lamb",
+  music: "maryhadalittlelamb.mid",
+  trainer: x => x.track == 1,
+  playback: x=> true,
+  offset: 7,
+  notes: 26,
+  tempo: 0.2
 }];
-
-var current_midi = midis[0];
+var current_midi = midis[1];
 var offset = current_midi.offset;
 
 var midi = new MIDIFile(fs.readFileSync(current_midi.music).buffer);
@@ -34,8 +42,9 @@ midi.getMidiEvents = () => playback;
 var scale = 20;
 var gap = 4;
 var note = scale - gap * 2;
+var tadj = scale/current_midi.tempo/1000;
 
-var draw = SVG('drawing').size((tmax-t+1000)/900*scale, game ? window.outerHeight : (high - low + 12)*7/12*scale);
+var draw = SVG('drawing').size(Math.max((tmax-t+1000)*tadj, window.outerWidth - 12), game ? window.outerHeight : (high - low + 12)*7/12*scale);
 var stave = draw.group();
 
 var degrees = [1, 1.5, 2, 2.5, 3, 4, 4.5, 5, 5.5, 6, 6.5, 7];
@@ -72,7 +81,7 @@ seq.map(x => {
   var h = (p - n)*7/12 + degrees[n] - 1;
   shapes[n]
     .clone()
-    .move((x.playTime - t)/900*scale, (high*7/12-h)*scale)
+    .move((x.playTime - t)*tadj, (high*7/12-h)*scale)
     .fill(colours[n])
 });
 
@@ -158,7 +167,7 @@ var gamecheck = x => {
       });
 
     var x = seq[state];
-    chordTime = (x.playTime - t)/900*scale;
+    chordTime = (x.playTime - t)*tadj;
     var p = x.param1 + offset;
     var n = p % 12;
     var h = (p - n)*7/12 + degrees[n] - 1;
