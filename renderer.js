@@ -89,6 +89,8 @@ var mio = require("easymidi");
 var synths = [new mio.Output("synth", true)];
 
 chordTime = window.outerWidth - scale;
+chord = {};
+anim = new Set();
 var state = -1;
 var marker = draw.group();
 var ray = marker.path('M 12 2 H 30 a 1 1 0 0 1 -1 6 L 12 2');
@@ -125,6 +127,9 @@ var gameplayback = () => {
     // Playing
     midiPlayer.play(function() {
         marker.opacity(1);
+        for (var i in chord)
+          chord[i].remove();
+        chord = {};
         gamereset();
         playing = false;
     });
@@ -156,7 +161,7 @@ var gamecheck = x => {
       );
 
     if (++state == seq.length) {
-      if (last_marker) {
+        if (last_marker) {
         last_marker.fx.stop();
         last_marker.opacity(0.3);
         markers.add(last_marker);
@@ -167,31 +172,30 @@ var gamecheck = x => {
           gamereset();
           gameplayback();
         }, 1000);
-      return;
-    }
+    } else {
+      var x = seq[state];
+      chordTime = (x.playTime - t)*tadj;
+      var p = x.param1 + offset;
+      var n = p % 12;
+      var h = (p - n)*7/12 + degrees[n] - 1;
+      if (last_marker) {
+        last_marker.fx.stop();
+        last_marker.opacity(0.3);
+        markers.add(last_marker);
+      }
+      last_marker = marker.clone()
+        .move(chordTime + scale/2 - gap, (high*7/12-h)*scale + scale/2 - gap)
+        ;
+      last_marker
+        .animate(1000)
+        .rotate(360)
+        .loop()
+        ;
+      if (chordTime > window.outerWidth/3)
+        window.scrollTo(window.outerWidth/3 - chordTime, 0);
 
-
-    var x = seq[state];
-    chordTime = (x.playTime - t)*tadj;
-    var p = x.param1 + offset;
-    var n = p % 12;
-    var h = (p - n)*7/12 + degrees[n] - 1;
-    if (last_marker) {
-      last_marker.fx.stop();
-      last_marker.opacity(0.3);
-      markers.add(last_marker);
+      return true;
     }
-    last_marker = marker.clone()
-      .move(chordTime + scale/2 - gap, (high*7/12-h)*scale + scale/2 - gap)
-      ;
-    last_marker
-      .animate(1000)
-      .rotate(360)
-      .loop()
-      ;
-    if (chordTime > window.outerWidth/3)
-      window.scrollTo(window.outerWidth/3 - chordTime, 0);
-    return true;
   }
 };
 gamecheck();
@@ -213,8 +217,6 @@ if (usbout.length) {
   if (usbin.length) {
     var mi = new mio.Input("score", true);
     var mu = new mio.Input(usbin[0], false);
-    chord = {};
-    anim = new Set();
     var paused = false;
     var pause = () => {
       anim.forEach(y => {
@@ -251,8 +253,11 @@ if (usbout.length) {
               anim.delete(y);
             })
           anim.add(y);
-        } else
+        } else {
+          if (chord[p])
+            chord[p].remove();
           chord[p] = y;
+        }
       } else {
         var y = chord[p];
         if (y) {
