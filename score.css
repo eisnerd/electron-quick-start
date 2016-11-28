@@ -22,9 +22,9 @@ body {
   width: 40%;
   height: 100%;
   border-radius: 8px;
-  opacity: 0.6;
+  opacity: 0.8;
 
-  background: black;
+  background: rgba(0, 0, 0, 0.8);
 }
 .left {
   float: left;
