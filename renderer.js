@@ -2,6 +2,7 @@ var fs = require("fs");
 var MIDIFile = require("midifile");
 var MIDIPlayer = require("midiplayer");
 var SVG = require("svg.js");
+require("./svg.easing.js");
 
 const model = require('./model');
 
