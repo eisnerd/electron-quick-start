@@ -98,9 +98,8 @@ var init = () => {
       ;
   });
 
-  const WebMidi = require('webmidi');
-  WebMidi.enable(function(err) {
-  var synths = WebMidi.outputs.filter(x => /^CH|usb/i.exec(x.name));
+  var mio = require("easymidi");
+  var synths = [new mio.Output("synth", true)];
 
   chordTime = window.outerWidth - scale;
   chord = {};
@@ -129,36 +128,49 @@ var init = () => {
     if (playing)
       return;
     playing = true;
-    var midiPlayer = new MIDIPlayer({
-      'outputs': WebMidi.outputs.filter(x => x.name == "score" || /^CH|usb|tim.*0/i.exec(x.name))
-    });
+    navigator.requestMIDIAccess().then(function(midiAccess) {
+      // Creating player
+      var midiPlayer = new MIDIPlayer({
+        'outputs': Array.from(midiAccess.outputs.values()).filter(x => x.name == "score" || /^CH|usb|tim.*0/i.exec(x.name))
+      });
 
-    // Loading the midiFile instance in the player
-    midiPlayer.load(midi);
+      // Loading the midiFile instance in the player
+      midiPlayer.load(midi);
 
-    // Playing
-    midiPlayer.play(function() {
-        marker.opacity(1);
-        for (var i in chord)
-          chord[i].remove();
-        chord = {};
-        gamereset();
-        playing = false;
+      // Playing
+      midiPlayer.play(function() {
+          marker.opacity(1);
+          for (var i in chord)
+            chord[i].remove();
+          chord = {};
+          gamereset();
+          playing = false;
+      });
+
+    }, function() {
+        console.log('No midi output');
     });
   };
   //gameplayback();
   var gamecheck = x => {
     if (!game)
       return;
-    var note = x ? x.note.number : undefined;
     if (x && x.velocity == 0)
       synths.forEach(synth =>
-        synth.stopNote(note, 1)
+        synth.send('noteoff', {
+          note: x.note,
+          velocity: 0,
+          channel: 0
+        })
       );
-    if (state == -1 || state < seq.length && x.velocity > 0 && note == seq[state].param1 + offset) {
+    if (state == -1 || state < seq.length && x.velocity > 0 && x.note == seq[state].param1 + offset) {
       if (x) {
         synths.forEach(synth =>
-          synth.playNote(note, 1)
+          synth.send('noteon', {
+            note: x.note,
+            velocity: 127,
+            channel: 0
+          })
         );
 
         var w = seq[state].word;
@@ -227,8 +239,14 @@ var init = () => {
     shapes = [circle, square, circle, square, circle, circle, square, circle, square, circle, square, circle];
   }
 
-    var usbin = WebMidi.inputs.filter(x => /^CH|usb/i.exec(x.name));
+  var usbout = mio.getOutputs().filter(/ /.exec.bind(/^CH|usb/i));
+  if (usbout.length) {
+    var mo = new mio.Output(usbout[0], false);
+    synths.push(mo);
+    var usbin = mio.getInputs().filter(/ /.exec.bind(/^CH|usb/i));
     if (usbin.length) {
+      var mi = new mio.Input("score", true);
+      var mu = new mio.Input(usbin[0], false);
       var paused = false;
       var pause = () => {
         anim.forEach(y => {
@@ -247,7 +265,7 @@ var init = () => {
         paused = false;
       };
       var noteon = x => {
-        var p = x.note.number;
+        var p = x.note;
         if (!gamecheck(x) && x.velocity > 0) {
           var n = p % 12;
           var h = (p - n)*7/12 + degrees[n] - 1;
@@ -279,10 +297,13 @@ var init = () => {
           }
         }
       };
-      usbin.forEach(mi => mi.addListener('noteon', 'all', noteon));
-      usbin.forEach(mi => mi.addListener('noteoff', 'all', noteon));
+      mi.on('noteon', noteon);
+      mu.on('noteon', noteon);
       window.onbeforeunload = function (e) {
         console.log("cleaning up");
+        mo.close();
+        mi.removeAllListeners();
+        mi.close();
       };
       window.onkeypress = e => {
         console.log(e);
@@ -297,7 +318,7 @@ var init = () => {
         }
       };
     }
-  });
+  }
   console.log("ready");
 };
 try {

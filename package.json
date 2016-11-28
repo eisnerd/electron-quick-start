@@ -27,7 +27,5 @@
     "midiplayer": "https://github.com/eisnerd/MIDIPlayer#master",
     "svg.js": "^2.3.6",
     "vue": "^2.1.3"
-    "vue": "^2.1.3",
-    "webmidi": "^2.0.0-rc.2"
   }
 }
