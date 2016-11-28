@@ -320,10 +320,6 @@ var init = () => {
     }
   }
   console.log("ready");
-  try {
-    require('fs').writeFile('./state.json', JSON.stringify(model.state));
-  } catch (e) {
-  }
 };
 try {
   Object.assign(model.state, require('./state.json'));
@@ -334,3 +330,11 @@ var vm = new Vue({data: model});
 vm.$watch('state.mode', init);
 vm.$watch('state.score', init);
 init();
+var change = () => {
+  try {
+    require('fs').writeFile('./state.json', JSON.stringify(model.state));
+  } catch (e) {
+  }
+};
+vm.$watch('state.mode', change);
+vm.$watch('state.score', change);
