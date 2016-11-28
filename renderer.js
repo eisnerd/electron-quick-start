@@ -1,4 +1,5 @@
 var fs = require("fs");
+var retry = require("async/retry");
 var MIDIFile = require("midifile");
 var MIDIPlayer = require("midiplayer");
 var SVG = require("svg.js");
@@ -17,9 +18,18 @@ var init = () => {
   var current_midi = model.scores[model.state.score] || { offset: 0 };
   var offset = current_midi.offset;
 
-  if (current_midi.music)
-    while (String.fromCharCode(new DataView(fs.readFileSync(current_midi.music).buffer, 0, 14).getUint8(0)) != "M");
-  var midi = !current_midi.music ? {} : new MIDIFile(fs.readFileSync(current_midi.music).buffer);
+retry(
+  10,
+  cont => fs.readFile(current_midi.music, (err, f) => {
+    if (err)
+      cont(err);
+    else
+      cont(
+        String.fromCharCode(new DataView(f.buffer, 0, 14).getUint8(0)) == "M" ? null : "No header",
+        f.buffer);
+  }),
+  (err, buffer) => {
+var midi = new MIDIFile(err ? undefined : buffer);
 
   var seq = !current_midi.music ? [] : midi.getMidiEvents().filter(x => x.subtype == 9 && current_midi.trainer(x)).filter((x, i) => !game || i < current_midi.notes);
   var pitches = seq.map(x => x.param1 + offset);
@@ -320,6 +330,7 @@ var init = () => {
     }
   }
   console.log("ready");
+  });
 };
 try {
   Object.assign(model.state, require('./state.json'));

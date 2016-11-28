@@ -20,6 +20,7 @@
     "electron": "^1.4.1"
   },
   "dependencies": {
+    "async": "^2.1.4",
     "debounce": "^1.0.0",
     "easymidi": "0.0.2",
     "midi": "^0.9.5",
