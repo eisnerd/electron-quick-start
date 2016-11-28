@@ -17,14 +17,16 @@ var midis = [{
 }, {
   name: "Mary had a Little Lamb",
   music: "maryhadalittlelamb.mid",
+  words: "ma- ry had a lit- tle lamb lit- tle lamb lit- tle lamb ma- ry had a lit- tle lamb its fleece was white as snow",
   trainer: x => x.track == 1,
   playback: x=> true,
   offset: 7,
   notes: 26,
-  tempo: 0.2
+  tempo: 0.14
 }, {
   name: "Rain, Rain Go Away",
   music: "rain.mid",
+  words: "rain rain go a- way come a- gain a- no- ther day rain rain go a- way some- thing la la la la",
   trainer: x => x.track == 1,
   playback: x=> true,
   offset: 0,
@@ -100,14 +102,34 @@ for (var i = low; i <= high; i++){
     .fill(colours[n])
 }
 return*/
-seq.map(x => {
+var words = (current_midi.words || "").split(" ");
+var word = i => /(.*[^-]+)(-)?(.)?|^$/.exec(words.length > i ? words[i] : "");
+var notes = seq.map((x, i) => {
   var p = x.param1+offset;
   var n = p % 12;
   var h = (p - n)*7/12 + degrees[n] - 1;
-  shapes[n]
+  var w = word(i);
+  var W = draw.plain(w[1] || "");
+  x.word = W
+    .move((x.playTime - t)*tadj - W.bbox().w/2 + scale/2 - gap, (high - _high - 2)*7/12*scale)
+    .font({
+      family:   'Helvetica',
+      size: 14
+    })
+    ;
+  if (i > 0 && word(i-1)[2]) {
+    var l = seq[i-1].word.bbox();
+    var r = W.bbox();
+    console.log(w[1], l, r);
+    draw.line(l.x2 + gap*2, l.cy + 1, r.x - gap*2, l.cy + 1)
+      .stroke("black")
+  }
+
+  return shapes[n]
     .clone()
     .move((x.playTime - t)*tadj, (high*7/12-h)*scale)
     .fill(colours[n])
+    ;
 });
 
 var mio = require("easymidi");
@@ -176,7 +198,7 @@ var gamecheck = x => {
       })
     );
   if (state == -1 || state < seq.length && x.velocity > 0 && x.note == seq[state].param1 + offset) {
-    if (x)
+    if (x) {
       synths.forEach(synth =>
         synth.send('noteon', {
           note: x.note,
@@ -184,6 +206,23 @@ var gamecheck = x => {
           channel: 0
         })
       );
+
+      var w = seq[state].word;
+      if (w)
+        w.animate(200)
+          .scale(1.8)
+          .situation.ease = pos => 1-(pos-0.5)*(pos-0.5)*4
+          ;
+
+      var note = notes[state];
+      note
+        .rotate(-20)
+        .animate(200)
+        .scale(1.8)
+        .rotate(40)
+        .after(() => note.rotate(0))
+        .situation.ease = pos => 1-(pos-0.5)*(pos-0.5)*4
+    }
 
     if (++state == seq.length) {
         if (last_marker) {
