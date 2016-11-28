@@ -50,6 +50,7 @@ var midis = [{
 var current_midi = midis[1];
 var offset = current_midi.offset;
 
+while (String.fromCharCode(new DataView(fs.readFileSync(current_midi.music).buffer, 0, 14).getUint8(0)) == "/");
 var midi = new MIDIFile(fs.readFileSync(current_midi.music).buffer);
 
 var seq = midi.getMidiEvents().filter(x => x.subtype == 9 && current_midi.trainer(x)).filter((x, i) => !game || i < current_midi.notes);
