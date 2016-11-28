@@ -2,7 +2,7 @@ body {
   font-family: Ubuntu, Helvetica, Arial;
 }
 .menu {
-	//visibility: hidden;
+	visibility: hidden;
 }
 .menu.wasmoving:hover, .menu.moving {
 	visibility: visible;
