@@ -52,7 +52,7 @@ var init = () => {
       var p = i;
       var n = p % 12;
       var h = (p - n)*7/12 + degrees[n] - 1;
-      if (degrees[i % 12] % 2 == 0 && i > low)
+      if (degrees[i % 12] % 2 == 0 && i > low - (low % 12))
         stave.line(0, (high*7/12-h)*scale+scale/2-gap, 30000, (high*7/12-h)*scale+scale/2-gap).stroke("grey").attr({"style": "z-index: 2"});
       else if ((i % 12) == 0)
         stave.line(0, (high-i)*7/12*scale+scale-gap, 30000, (high-i)*7/12*scale+scale-gap).stroke("black");
