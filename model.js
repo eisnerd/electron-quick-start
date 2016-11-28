@@ -1,11 +1,13 @@
 module.exports = {
-  mode: 0,
+  state: {
+    mode: 0,
+    score: 0
+  },
   modes: [
     "Songs",
     "Drawing",
     "Simon says"
   ],
-  score: 0,
   scores: [{
     name: "Rain, Rain Go Away",
     music: "rain.mid",

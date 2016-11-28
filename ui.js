@@ -19,10 +19,10 @@ var vm = new Vue({
   },
   methods: {
     _mode: function(i) {
-      this.mode = i
+      this.state.mode = i
     },
     _score: function(i) {
-      this.score = i
+      this.state.score = i
     }
   }
 });

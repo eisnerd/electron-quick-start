@@ -11,10 +11,10 @@ var init = () => {
   while (s = document.getElementsByTagName('svg').item(0))
     s.remove();
 
-  var game = model.mode == 0;
-  var score = model.mode == 1;
+  var game = model.state.mode == 0;
+  var score = model.state.mode == 1;
 
-  var current_midi = model.scores[model.score] || {offset: 0};
+  var current_midi = model.scores[model.state.score] || { offset: 0 };
   var offset = current_midi.offset;
 
   if (current_midi.music)
@@ -28,7 +28,7 @@ var init = () => {
 
   var i = 0;
   var playback = !current_midi.music ? [] : midi.getMidiEvents()
-    .filter(x => (x.subtype == 9 && x.playTime <= tmax || x.subtype == 8 && x.playTime <= tmax + 3000) && current_midi.trainer(x))//playback(x))
+    .filter(x => (x.subtype == 9 && x.playTime <= tmax || x.subtype == 8 && x.playTime <= tmax + 3000) && current_midi.playback(x))
     .map(x => { x.param1 += offset; x.playTime -= t + 600; return x; });
   midi.getMidiEvents = () => playback;
 
@@ -320,9 +320,17 @@ var init = () => {
     }
   }
   console.log("ready");
+  try {
+    require('fs').writeFile('./state.json', JSON.stringify(model.state));
+  } catch (e) {
+  }
 };
+try {
+  Object.assign(model.state, require('./state.json'));
+} catch (e) {
+}
 const Vue = require('vue');
 var vm = new Vue({data: model});
-vm.$watch('mode', init);
-vm.$watch('score', init);
+vm.$watch('state.mode', init);
+vm.$watch('state.score', init);
 init();

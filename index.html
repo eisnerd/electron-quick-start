@@ -11,16 +11,16 @@
           game
         </span>
         <template v-for="(x, i) in modes">
-          <btn @select="_mode(i)" :option="x" :current="modes[mode]"></btn>
+          <btn @select="_mode(i)" :option="x" :current="modes[state.mode]"></btn>
         </template>
       </div>
       <div class="right">
         <span class="title">
           instructions
         </span>
-        <btn @select="_score(-1)" option="none" :current="score < 0 ? 'none' : scores[score]"></btn>
+        <btn @select="_score(-1)" option="none" :current="state.score < 0 ? 'none' : scores[state.score]"></btn>
         <template v-for="(x, i) in scores">
-          <btn @select="_score(i)" :option="x.name" :current="score < 0 ? 'none' : scores[score].name"></btn>
+          <btn @select="_score(i)" :option="x.name" :current="state.score < 0 ? 'none' : scores[state.score].name"></btn>
         </template>
       </div>
     </div>
