@@ -348,6 +348,7 @@ init();
 var change = () => {
   try {
     require('fs').writeFile('./state.json', JSON.stringify(model.state));
+    location.reload();
   } catch (e) {
   }
 };
