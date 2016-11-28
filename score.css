@@ -16,7 +16,7 @@ body {
   z-index: 1;
 
   color: white;
-  font-size: 26pt;
+  font-size: 24pt;
 }
 .left, .right {
   width: 40%;
@@ -38,8 +38,8 @@ body {
 .left span, .right span {
   display: block;
   padding: 10px;
-  padding-left: 35px;
-  margin: 15px;
+  padding-left: 20px;
+  margin: 12px;
   border-radius: 8px;
 }
 
