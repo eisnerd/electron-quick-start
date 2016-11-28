@@ -35,6 +35,14 @@ module.exports = {
     notes: 32,
     tempo: 0.53
   }, {
+    name: "Twinkle, Twinkle Little Star",
+    music: "twinkle.mid",
+    trainer: x => x.track == 1,
+    playback: x => true,
+    offset: 1,
+    notes: 6*7,
+    tempo: 0.52
+  }, {
     name: "Dear, if you change",
     music: "downland_songes_or_ayres_i-book_7_(c)icking-archive.mid",
     trainer: x => x.track == 1,
