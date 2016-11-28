@@ -18,26 +18,16 @@ var init = () => {
   var current_midi = model.scores[model.state.score] || { offset: 0 };
   var offset = current_midi.offset;
 
-retry(
-  10,
-  cont => fs.readFile(current_midi.music, (err, f) => {
-    if (err)
-      cont(err);
-    else
-      cont(
-        String.fromCharCode(new DataView(f.buffer, 0, 14).getUint8(0)) == "M" ? null : "No header",
-        f.buffer);
-  }),
-  (err, buffer) => {
+  var load_midi = (err, buffer) => {
     var midi = new MIDIFile(err ? undefined : buffer);
 
-    var seq = !current_midi.music ? [] : midi.getMidiEvents().filter(x => x.subtype == 9 && current_midi.trainer(x)).filter((x, i) => !game || i < current_midi.notes);
+    var seq = midi.getMidiEvents().filter(x => x.subtype == 9 && current_midi.trainer(x)).filter((x, i) => !game || i < current_midi.notes);
     var pitches = seq.map(x => x.param1 + offset);
     var low = Math.min(...pitches), high = 96, _high = Math.max(...pitches);
     var t = Math.min(...seq.map(x => x.playTime)) - 600, tmax = Math.max(...seq.map(x => x.playTime));
 
     var i = 0;
-    var playback = !current_midi.music ? [] : midi.getMidiEvents()
+    var playback = midi.getMidiEvents()
       .filter(x => (x.subtype == 9 && x.playTime <= tmax || x.subtype == 8 && x.playTime <= tmax + 3000) && current_midi.playback(x))
       .map(x => { x.param1 += offset; x.playTime -= t + 600; return x; });
     midi.getMidiEvents = () => playback;
@@ -330,7 +320,21 @@ retry(
       }
     }
     console.log("ready");
-  });
+  };
+  if (current_midi.music)
+    retry(
+      10,
+      cont => fs.readFile(current_midi.music, (err, f) => {
+        if (err)
+          cont(err);
+        else
+          cont(
+            String.fromCharCode(new DataView(f.buffer, 0, 14).getUint8(0)) == "M" ? null : "No header",
+            f.buffer);
+      }),
+      load_midi);
+  else
+    load_midi();
 };
 try {
   Object.assign(model.state, require('./state.json'));
