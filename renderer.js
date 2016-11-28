@@ -56,12 +56,12 @@ var midi = new MIDIFile(fs.readFileSync(current_midi.music).buffer);
 var seq = midi.getMidiEvents().filter(x => x.subtype == 9 && current_midi.trainer(x)).filter((x, i) => !game || i < current_midi.notes);
 var pitches = seq.map(x => x.param1 + offset);
 var low = Math.min(...pitches), high = 96, _high = Math.max(...pitches);
-var t = Math.min(...seq.map(x => x.playTime)) - 2000, tmax = Math.max(...seq.map(x => x.playTime));
+var t = Math.min(...seq.map(x => x.playTime)) - 600, tmax = Math.max(...seq.map(x => x.playTime));
 
 var i = 0;
 var playback = midi.getMidiEvents()
   .filter(x => (x.subtype == 9 && x.playTime <= tmax || x.subtype == 8 && x.playTime <= tmax + 3000) && current_midi.playback(x))
-  .map(x => { x.param1 += offset; x.playTime -= t + 2000; return x; });
+  .map(x => { x.param1 += offset; x.playTime -= t + 600; return x; });
 midi.getMidiEvents = () => playback;
 
 var scale = 20;
