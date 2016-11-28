@@ -20,7 +20,7 @@
         </span>
         <btn @select="_score(-1)" option="none" :current="score < 0 ? 'none' : scores[score]"></btn>
         <template v-for="(x, i) in scores">
-          <btn @select="_score(i)" :option="x" :current="score < 0 ? 'none' : scores[score]"></btn>
+          <btn @select="_score(i)" :option="x.name" :current="score < 0 ? 'none' : scores[score].name"></btn>
         </template>
       </div>
     </div>

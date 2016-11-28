@@ -1,28 +1,20 @@
+const model = require('./model');
 const Vue = require('./node_modules/vue/dist/vue.common.js');
 const debounce = require('debounce');
 
+model.isMoving = false;
+model.wasMoving = false;
+
 var vm = new Vue({
   el: '.menu',
-  data: {
-    mode: 0,
-    modes: [
-      "songs",
-      "drawing",
-      "simon says"
-    ],
-    score: -1,
-    scores: [
-      "rain rain go away",
-      "mary had a little lamb",
-      "amazing grace"
-    ],
-    isMoving: false,
-    wasMoving: false
-  },
+  data: model,
   components: {
     btn: {
       props: ['option', 'current'],
-      template: `<span @click="$emit('select')" :class="{ selected: option == current }">{{ option }}</span>`
+      filters: {
+        letters: x => x.toLowerCase().replace(/[^\w\s]/g, '')
+      },
+      template: `<span @click="$emit('select')" :class="{ selected: option == current }">{{ option | letters }}</span>`
     }
   },
   methods: {
