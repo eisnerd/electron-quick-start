@@ -22,6 +22,30 @@ var midis = [{
   offset: 7,
   notes: 26,
   tempo: 0.2
+}, {
+  name: "Rain, Rain Go Away",
+  music: "rain.mid",
+  trainer: x => x.track == 1,
+  playback: x=> true,
+  offset: 0,
+  notes: 100,
+  tempo: 0.17
+}, {
+  name: "Dear, if you change",
+  music: "downland_songes_or_ayres_i-book_7_(c)icking-archive.mid",
+  trainer: x => x.track == 1,
+  playback: x=> true,
+  offset: 0,
+  notes: 100000,
+  tempo: 1.22
+}, {
+  name: "Come, heavy sleep",
+  music: "downland_songes_or_ayres_i-book_20_(c)icking-archive.mid",
+  trainer: x => x.track == 1,
+  playback: x=> true,
+  offset: 0,
+  notes: 100000,
+  tempo: 1
 }];
 var current_midi = midis[1];
 var offset = current_midi.offset;
