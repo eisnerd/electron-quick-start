@@ -39,7 +39,7 @@ module.exports = {
     music: "twinkle.mid",
     trainer: x => x.track == 1,
     playback: x => true,
-    offset: 1,
+    offset: -6,
     notes: 6*7,
     tempo: 0.52
   }, {
