@@ -1,0 +1,60 @@
+body {
+  font-family: Ubuntu, Helvetica, Arial;
+}
+.menu {
+	//visibility: hidden;
+}
+.menu.wasmoving:hover, .menu.moving {
+	visibility: visible;
+}
+.menu {
+  position: fixed;
+  top: 10%;
+  left: 10%;
+  right: 10%;
+  bottom: 10%;
+  z-index: 1;
+
+  color: white;
+  font-size: 26pt;
+}
+.left, .right {
+  width: 45%;
+  height: 100%;
+  border-radius: 8px;
+  opacity: 0.6;
+
+  background: black;
+}
+.left {
+  float: left;
+}
+.right {
+  float: right;
+}
+.title {
+}
+
+.left span, .right span {
+  display: block;
+  padding: 25px;
+  padding-left: 35px;
+  margin: 15px;
+  border-radius: 8px;
+}
+
+.title ~ span {
+  background: slateblue;
+}
+
+.title ~ span:hover {
+  background: darkslateblue;
+}
+
+.title ~ span.selected {
+  background: rebeccapurple;
+}
+
+.title ~ span.selected:hover {
+  background: indigo;
+}

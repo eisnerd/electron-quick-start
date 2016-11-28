@@ -5,6 +5,25 @@
     <title>Hello World!</title>
   </head>
   <body style="overflow-y: hidden;">
+    <div class="menu" :class="{ moving: isMoving, wasmoving: wasMoving }">
+      <div class="left">
+        <span class="title">
+          game
+        </span>
+        <template v-for="(x, i) in modes">
+          <btn @select="_mode(i)" :option="x" :current="modes[mode]"></btn>
+        </template>
+      </div>
+      <div class="right">
+        <span class="title">
+          instructions
+        </span>
+        <btn @select="_score(-1)" option="none" :current="score < 0 ? 'none' : scores[score]"></btn>
+        <template v-for="(x, i) in scores">
+          <btn @select="_score(i)" :option="x" :current="score < 0 ? 'none' : scores[score]"></btn>
+        </template>
+      </div>
+    </div>
     <div id="drawing">
     </div>
     <div id="score" style="position: fixed; left: 0; top: 0;">
@@ -13,6 +32,7 @@
   <script>
     // You can also require other files to run in this process
     require('./renderer.js')
+    require('./ui.js')
     require('./live.js')
     require('./conic-gradient.js')
   </script>
