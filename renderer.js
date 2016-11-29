@@ -239,11 +239,11 @@ var init = () => {
       shapes = [circle, square, circle, square, circle, circle, square, circle, square, circle, square, circle];
     }
 
-    var usbout = mio.getOutputs().filter(/ /.exec.bind(/^CH|usb/i));
+    var usbout = mio.getOutputs().filter(/ /.exec.bind(/^CH|usb|tim.*0/i));
     if (usbout.length) {
       var mo = new mio.Output(usbout[0], false);
       synths.push(mo);
-      var usbin = mio.getInputs().filter(/ /.exec.bind(/^CH|usb/i));
+      var usbin = mio.getInputs().filter(/ /.exec.bind(/^CH|usb|VMPK/i));
       if (usbin.length) {
         var mi = new mio.Input("score", true);
         var mu = new mio.Input(usbin[0], false);
