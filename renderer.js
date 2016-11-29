@@ -273,19 +273,15 @@ var init = () => {
               .clone()
               .move(chordTime, (high*7/12-h)*scale)
               .fill(colours[n])
-              .addClass('foo')
             resume();
             if (score) {
-              window.setTimeout(Y => {
-              Y
-                .addClass('goleft')
-              }, 0, y);
-                // .animate(100000)
-                // .x(-5000)
-                // .after(() => {
-                //   y.remove();
-                //   anim.delete(y);
-                // })
+              y
+                .animate(100000)
+                .x(-5000)
+                .after(() => {
+                  y.remove();
+                  anim.delete(y);
+                })
               anim.add(y);
             } else {
               if (chord[p])
