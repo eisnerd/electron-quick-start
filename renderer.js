@@ -102,7 +102,7 @@ var init = () => {
         }
       }
 
-      return shapes[n]
+      return x.shape = shapes[n]
         .clone()
         .move((x.playTime - t)*tadj, (high*7/12-h)*scale)
         .fill(colours[n])
@@ -250,7 +250,8 @@ var init = () => {
         state += N;
         if (state == seq.length) {
           last_markers.each(function() {
-            this.fx.stop();
+            if (this.fx)
+              this.fx.stop();
             this.opacity(0.3);
             markers.add(this);
           });
@@ -262,28 +263,44 @@ var init = () => {
             }, 1000);
         } else {
           last_markers.each(function() {
-            this.fx.stop();
+            if (this.fx)
+              this.fx.stop();
             this.opacity(0.3);
             markers.add(this);
           });
 
-          seq[state].chord.map((x, i) => {
-            chordTime = (x.playTime - t)*tadj;
-            var p = x.param1 + offset;
-            var n = p % 12;
-            var h = (p - n)*7/12 + degrees[n] - 1;
-            var last_marker = marker.clone()
-              .move(chordTime + scale/2 - gap, (high*7/12-h)*scale + scale/2 - gap)
-              ;
-            //gs.to(last_marker.node, 1.5, {rotation: 360, transformOrigin: "center", repeat: -1, ease: gs.Linear.easeIn});
-            last_marker
-              .animate(1000)
-              .rotate(360)
-              .loop()
-              ;
+          if (seq[state].chord.length > 1) {
+            var c = draw.set();
+            seq[state].chord.map(x => {
+              chordTime = (x.playTime - t)*tadj;
+              return c.add(x.shape);
+            });
+            var b = c.bbox();
+            last_markers.add(
+              draw.rect(b.width + gap*2, b.height + gap*2)
+                .move(b.x - gap, b.y - gap)
+                .radius(scale/2.5)
+                .fill('none')
+                .stroke({ color: 'orange', width: 2 })
+            );
+          } else
+            seq[state].chord.map((x, i) => {
+              chordTime = (x.playTime - t)*tadj;
+              var p = x.param1 + offset;
+              var n = p % 12;
+              var h = (p - n)*7/12 + degrees[n] - 1;
+              var last_marker = marker.clone()
+                .move(chordTime + scale/2 - gap, (high*7/12-h)*scale + scale/2 - gap)
+                ;
+              //gs.to(last_marker.node, 1.5, {rotation: 360, transformOrigin: "center", repeat: -1, ease: gs.Linear.easeIn});
+              last_marker
+                .animate(1000)
+                .rotate(360)
+                .loop()
+                ;
 
-            last_markers.add(last_marker);
-          });
+              last_markers.add(last_marker);
+            });
 
           window.scroller.kill();
           window.scroller = gs.to(window, 1, {scrollTo: {x: chordTime - window.outerWidth/3, y: Math.min(last_markers.bbox().y - scale*3, last_markers.bbox().y2 + scale*3 - window.outerHeight)}});
