@@ -86,12 +86,20 @@ var init = () => {
           size: 14
         })
         ;
-      if (i > 0 && word(i-1)[2]) {
+
+      if (i > 0) {
         var l = seq[i-1].word.bbox();
         var r = W.bbox();
-        console.log(w[1], l, r);
-        draw.line(l.x2 + gap*2, l.cy + 1, r.x - gap*2, l.cy + 1)
-          .stroke("black")
+        if (r.x - l.x2 <= 2 && l.y2 == r.y2) {
+          W.dy(12);
+          r = W.bbox();
+        }
+        if (word(i-1)[2]) {
+          console.log(w[1], l, r);
+          var g = r.x - l.x2 > gap * 6 ? gap * 2 : r.x - l.x2 > gap * 4 ? gap : gap / 2;
+          draw.line(l.x2 + g, l.cy + 1, l.y2 == r.y2 ? r.x - g : l.x2 + g + gap * 2, l.cy + 1)
+            .stroke("black")
+        }
       }
 
       return shapes[n]
