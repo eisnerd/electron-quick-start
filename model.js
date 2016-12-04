@@ -71,7 +71,7 @@ module.exports = {
     playback: x=> true,
     offset: 0,
     notes: 100000,
-    chord_threshold: 1,
+    chord_threshold: 25,
     tempo: 0.75
   }]
 };

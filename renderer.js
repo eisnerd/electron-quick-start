@@ -109,18 +109,26 @@ var init = () => {
         ;
     });
 
-    current_midi.chord_threshold = 1;
-    if (current_midi.chord_threshold > 0 && seq.length > 0) {
+    var chord_threshold = current_midi.chord_threshold || 0;
+    if (seq.length > 0) {
       var chord = [];
-      var lastTime = seq[0].playTime + current_midi.chord_threshold;
+      var lastTime = seq[0].playTime + chord_threshold;
       seq.map(x => {
         if (x.playTime > lastTime) {
           chord = [];
-          lastTime = x.playTime + current_midi.chord_threshold;
+          lastTime = x.playTime + chord_threshold;
         }
         chord.push(x);
         x.chord = chord;
       });
+      /*seq.map((x, i) => {
+        if (x.chord.length == 1) {
+          console.log(x.note, seq[i-1].playTime, seq[i].playTime, seq[i+1].playTime);
+        }
+        if (x.chord.length > 2) {
+          console.log(x.chord.map(x => x.param1 + "@" + x.playTime));
+        }
+      });*/
     }
 
     var mio = require("easymidi");
