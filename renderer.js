@@ -129,6 +129,7 @@ var init = () => {
     var last_marker;
     var gamereset = () => {
       state = -1;
+      last_marker.remove();
       last_marker = null;
       markers.remove();
       markers = draw.group();
