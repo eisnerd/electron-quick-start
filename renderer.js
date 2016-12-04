@@ -209,7 +209,7 @@ var init = () => {
       }
 
       var N = 1;
-      if (state == -1 || state < seq.length && x.velocity > 0 && Object.keys(gamechord).length == (N = seq[state].chord.length) && seq[state].chord.every((x, i) => gamechord[x.param1 + offset])) {
+      if (state == -1 || state < seq.length && x.velocity > 0 && ((N = seq[state].chord.length) == 1 || Object.keys(gamechord).length == N) && seq[state].chord.every((x, i) => gamechord[x.param1 + offset])) {
         gamechord = {};
         if (x) {
           if (synthchord[x.note])
