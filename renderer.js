@@ -109,6 +109,20 @@ var init = () => {
         ;
     });
 
+    current_midi.chord_threshold = 1;
+    if (current_midi.chord_threshold > 0 && seq.length > 0) {
+      var chord = [];
+      var lastTime = seq[0].playTime + current_midi.chord_threshold;
+      seq.map(x => {
+        if (x.playTime > lastTime) {
+          chord = [];
+          lastTime = x.playTime + current_midi.chord_threshold;
+        }
+        chord.push(x);
+        x.chord = chord;
+      });
+    }
+
     var mio = require("easymidi");
     var synths = [new mio.Output("synth", true)];
 
