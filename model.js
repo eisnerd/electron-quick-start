@@ -64,5 +64,14 @@ module.exports = {
     offset: 0,
     notes: 100000,
     tempo: 0.25
+  }, {
+    name: "Für Alina",
+    music: "alina.mid",
+    trainer: x => true,
+    playback: x=> true,
+    offset: 0,
+    notes: 100000,
+    chord_threshold: 1,
+    tempo: 0.75
   }]
 };

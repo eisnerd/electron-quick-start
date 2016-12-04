@@ -12,7 +12,7 @@ var vm = new Vue({
     btn: {
       props: ['option', 'current'],
       filters: {
-        letters: x => x.toLowerCase().replace(/[^\w\s]/g, '')
+        letters: x => x.toLowerCase().replace(/[,.?!;:'"()&=+_-]/g, '')
       },
       template: `<span @click="$emit('select')" :class="{ selected: option == current }">{{ option | letters }}</span>`
     }
