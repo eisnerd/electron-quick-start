@@ -188,6 +188,7 @@ var init = () => {
       });
     };
     //gameplayback();
+    var synthchord = {};
     var gamechord = {};
     var gamecheck = x => {
       if (!game)
@@ -195,6 +196,7 @@ var init = () => {
       if (x) {
         if (x.velocity == 0) {
           delete gamechord[x.note];
+          delete synthchord[x.note];
           synths.forEach(synth =>
             synth.send('noteoff', {
               note: x.note,
@@ -210,10 +212,20 @@ var init = () => {
       if (state == -1 || state < seq.length && x.velocity > 0 && Object.keys(gamechord).length == (N = seq[state].chord.length) && seq[state].chord.every((x, i) => gamechord[x.param1 + offset])) {
         gamechord = {};
         if (x) {
+          if (synthchord[x.note])
+            synths.forEach(synth =>
+              synth.send('noteoff', {
+                note: x.note,
+                velocity: 0,
+                channel: 0
+              })
+            );
+
+          synthchord[x.note] = true;
           synths.forEach(synth =>
             synth.send('noteon', {
               note: x.note,
-              velocity: 127,
+              velocity: Math.min(127, 10 + x.velocity * 1.5),
               channel: 0
             })
           );
@@ -295,6 +307,12 @@ var init = () => {
     if (usbout.length) {
       var mo = new mio.Output(usbout[0], false);
       synths.push(mo);
+      mo.send('cc', {
+        controller: 123,
+        value: 0,
+        channel: 0
+      });
+
       var usbin = mio.getInputs().filter(/ /.exec.bind(/^CH|usb|VMPK/i));
       if (usbin.length) {
         var mi = new mio.Input("score", true);
@@ -367,6 +385,11 @@ var init = () => {
           }
           if (e.key == "Enter") {
             resume();
+            if (state > 0)
+              seq[state - 1].chord.map(x => noteon({note: x.param1 + offset, velocity: 0}));
+            if (!e.shiftKey)
+              setTimeout(x => x.map(x => noteon({note: x.param1 + offset, velocity: 0})), 500, seq[state].chord);
+            seq[state].chord.map(x => noteon({note: x.param1 + offset, velocity: 80}));
           }
         };
       }
