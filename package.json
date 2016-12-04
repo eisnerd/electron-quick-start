@@ -23,6 +23,7 @@
     "async": "^2.1.4",
     "debounce": "^1.0.0",
     "easymidi": "0.0.2",
+    "gsap": "^1.19.0",
     "midi": "^0.9.5",
     "midifile": "^1.0.4",
     "midiplayer": "https://github.com/eisnerd/MIDIPlayer#master",

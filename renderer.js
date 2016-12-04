@@ -3,6 +3,7 @@ var retry = require("async/retry");
 var MIDIFile = require("midifile");
 var MIDIPlayer = require("midiplayer");
 var SVG = require("svg.js");
+var gs = require("gsap");
 
 const model = require('./model');
 
