@@ -148,11 +148,13 @@ var init = () => {
       .move(-100, -100)
       .fill('orange')
     var markers = draw.group();
-    var last_marker;
+    var last_markers = draw.set();
     var gamereset = () => {
       state = -1;
-      last_marker.remove();
-      last_marker = null;
+      last_markers.each(function() {
+        this.remove();
+      });
+      last_markers.clear();
       markers.remove();
       markers = draw.group();
       gamecheck(0);
@@ -186,18 +188,27 @@ var init = () => {
       });
     };
     //gameplayback();
+    var gamechord = {};
     var gamecheck = x => {
       if (!game)
         return;
-      if (x && x.velocity == 0)
-        synths.forEach(synth =>
-          synth.send('noteoff', {
-            note: x.note,
-            velocity: 0,
-            channel: 0
-          })
-        );
-      if (state == -1 || state < seq.length && x.velocity > 0 && x.note == seq[state].param1 + offset) {
+      if (x) {
+        if (x.velocity == 0) {
+          delete gamechord[x.note];
+          synths.forEach(synth =>
+            synth.send('noteoff', {
+              note: x.note,
+              velocity: 0,
+              channel: 0
+            })
+          );
+        } else
+          gamechord[x.note] = true;
+      }
+
+      var N = 1;
+      if (state == -1 || state < seq.length && x.velocity > 0 && Object.keys(gamechord).length == (N = seq[state].chord.length) && seq[state].chord.every((x, i) => gamechord[x.param1 + offset])) {
+        gamechord = {};
         if (x) {
           synths.forEach(synth =>
             synth.send('noteon', {
@@ -224,12 +235,13 @@ var init = () => {
             .situation.ease = pos => 1-(pos-0.5)*(pos-0.5)*4
         }
 
-        if (++state == seq.length) {
-            if (last_marker) {
-            last_marker.fx.stop();
-            last_marker.opacity(0.3);
-            markers.add(last_marker);
-          }
+        state += N;
+        if (state == seq.length) {
+          last_markers.each(function() {
+            this.fx.stop();
+            this.opacity(0.3);
+            markers.add(this);
+          });
           if (!playing)
             window.setTimeout(() => {
               marker.opacity(0);
@@ -237,24 +249,29 @@ var init = () => {
               gameplayback();
             }, 1000);
         } else {
-          var x = seq[state];
-          chordTime = (x.playTime - t)*tadj;
-          var p = x.param1 + offset;
-          var n = p % 12;
-          var h = (p - n)*7/12 + degrees[n] - 1;
-          if (last_marker) {
-            last_marker.fx.stop();
-            last_marker.opacity(0.3);
-            markers.add(last_marker);
-          }
-          last_marker = marker.clone()
-            .move(chordTime + scale/2 - gap, (high*7/12-h)*scale + scale/2 - gap)
-            ;
-          last_marker
-            .animate(1000)
-            .rotate(360)
-            .loop()
-            ;
+          last_markers.each(function() {
+            this.fx.stop();
+            this.opacity(0.3);
+            markers.add(this);
+          });
+
+          seq[state].chord.map((x, i) => {
+            chordTime = (x.playTime - t)*tadj;
+            var p = x.param1 + offset;
+            var n = p % 12;
+            var h = (p - n)*7/12 + degrees[n] - 1;
+            var last_marker = marker.clone()
+              .move(chordTime + scale/2 - gap, (high*7/12-h)*scale + scale/2 - gap)
+              ;
+            //gs.to(last_marker.node, 1.5, {rotation: 360, transformOrigin: "center", repeat: -1, ease: gs.Linear.easeIn});
+            last_marker
+              .animate(1000)
+              .rotate(360)
+              .loop()
+              ;
+
+            last_markers.add(last_marker);
+          });
           window.scroller.kill();
           window.scroller = gs.to(window, 1, {scrollTo: {x: chordTime - window.outerWidth/3, y: (high*7/12-h+5)*scale - window.outerHeight}});
 
