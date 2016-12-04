@@ -26,7 +26,7 @@ var init = () => {
 
     var seq = midi.getMidiEvents().filter(x => x.subtype == 9 && current_midi.trainer(x)).filter((x, i) => !game || i < current_midi.notes);
     var pitches = seq.map(x => x.param1 + offset);
-    var low = Math.min(...pitches), high = 96, _high = Math.max(...pitches);
+    var low = Math.min(...pitches), _high = Math.max(...pitches), high = Math.max(96, _high);
     var t = Math.min(...seq.map(x => x.playTime)) - 600, tmax = Math.max(...seq.map(x => x.playTime));
 
     var i = 0;
@@ -40,7 +40,7 @@ var init = () => {
     var note = scale - gap * 2;
     var tadj = scale/current_midi.tempo/1000;
 
-    var draw = SVG('drawing').size(Math.max(0, (tmax-t+1000)*tadj, window.outerWidth - 12), Math.max(0, game ? window.outerHeight : (high - low + 12)*7/12*scale));
+    var draw = SVG('drawing').size(Math.max(0, (tmax-t+1000)*tadj, window.outerWidth - 12), game ? Math.max(0, window.outerHeight - 60, (high - low + 12)*7/12*scale) : Math.max(0, (high - low + 12)*7/12*scale));
     var stave = draw.group();
 
     var degrees = [1, 1.5, 2, 2.5, 3, 4, 4.5, 5, 5.5, 6, 6.5, 7];
