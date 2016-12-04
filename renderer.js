@@ -272,8 +272,9 @@ var init = () => {
 
             last_markers.add(last_marker);
           });
+
           window.scroller.kill();
-          window.scroller = gs.to(window, 1, {scrollTo: {x: chordTime - window.outerWidth/3, y: (high*7/12-h+5)*scale - window.outerHeight}});
+          window.scroller = gs.to(window, 1, {scrollTo: {x: chordTime - window.outerWidth/3, y: Math.min(last_markers.bbox().y - scale*3, last_markers.bbox().y2 + scale*3 - window.outerHeight)}});
 
           return true;
         }
