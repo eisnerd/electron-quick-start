@@ -1,5 +1,5 @@
 const model = require('./model');
-const Vue = require('./node_modules/vue/dist/vue.common.js');
+const Vue = require('vue/dist/vue.common.js');
 const debounce = require('debounce');
 
 model.isMoving = false;
@@ -35,7 +35,10 @@ var moreoff = debounce(() => {
 }, 5000);
 
 window.onmousemove = () => {
-  console.log("move");
+  try {
+    if (window.scroller._timeline.rawTime() < window.scroller.endTime() + 0.1)
+      return;
+  } catch(e) {}
   vm.isMoving = true;
   vm.wasMoving = true;
   off();

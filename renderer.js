@@ -4,6 +4,8 @@ var MIDIFile = require("midifile");
 var MIDIPlayer = require("midiplayer");
 var SVG = require("svg.js");
 var gs = require("gsap");
+require("gsap/src/uncompressed/plugins/ScrollToPlugin.js");
+window.scroller = gs.to(window, 1, {scrollTo: {x: 0}});
 
 const model = require('./model');
 
@@ -222,8 +224,8 @@ var init = () => {
             .rotate(360)
             .loop()
             ;
-          if (chordTime > window.outerWidth/3)
-            window.scrollTo(window.outerWidth/3 - chordTime, 0);
+          window.scroller.kill();
+          window.scroller = gs.to(window, 1, {scrollTo: {x: chordTime - window.outerWidth/3, y: (high*7/12-h+5)*scale - window.outerHeight}});
 
           return true;
         }
