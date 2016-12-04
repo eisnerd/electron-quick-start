@@ -63,6 +63,6 @@ module.exports = {
     playback: x=> true,
     offset: 0,
     notes: 100000,
-    tempo: 1
+    tempo: 0.25
   }]
 };
