@@ -484,6 +484,8 @@ var init = () => {
         window.onkeypress = e => {
           console.log(e);
           if (e.key == " ") {
+            if (game > 0)
+              simon.length = 0;
             if (game)
               gamereset();
             else
