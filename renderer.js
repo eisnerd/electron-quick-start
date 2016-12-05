@@ -15,7 +15,7 @@ var init = () => {
   while (s = document.getElementsByTagName('svg').item(0))
     s.remove();
 
-  var game = model.state.mode == 0;
+  var game = model.state.mode - 1;
   var score = model.state.mode == 1;
 
   var current_midi = model.scores[model.state.score] || { offset: 0 };
@@ -116,6 +116,7 @@ var init = () => {
 
       return x.shape = shapes[n]
         .clone()
+        .opacity(game > 0 ? 0 : 1)
         .move((x.playTime - t)*tadj, (high*7/12-h)*scale)
         .fill(colours[n])
         ;
@@ -150,6 +151,10 @@ var init = () => {
     chord = {};
     anim = new Set();
     var state = -1;
+    var simon = {
+      playthrough: false,
+      length: 0
+    };
     var marker = draw.group();
     var ray = marker.path('M 12 2 H 30 a 1 1 0 0 1 -1 6 L 12 2');
     for (var i = 0; i < 18; i++)
@@ -200,11 +205,44 @@ var init = () => {
       });
     };
     //gameplayback();
+    var noteon;
     var synthchord = {};
     var gamechord = {};
     var gamecheck = x => {
       if (!game)
         return;
+
+      if (state == -1 && game > 0 && !simon.playthrough) {
+        game = -1;
+        simon.playthrough = true;
+        simon.length++;
+        for (var i = 0; i < simon.length; i++)
+          notes[i].opacity(1);
+        var startTime = seq[0].playTime - 1000;
+        var endTime;
+        for (var i = 0; i < simon.length; i++) {
+          setTimeout(x => {
+            noteon({
+              note: x.param1 + offset,
+              velocity: x.param2
+            });
+          }, seq[i].playTime - startTime, seq[i]);
+          setTimeout(x => {
+            noteon({
+              note: x.param1 + offset,
+              velocity: 0
+            });
+          }, endTime = seq[i].playTime + seq[i].duration - startTime, seq[i]);
+        }
+        setTimeout(() => {
+          game = 1;
+          gamereset();
+          simon.playthrough = false;
+          for (var i = 0; i < simon.length; i++)
+            notes[i].opacity(0);
+        }, endTime + 200);
+      }
+
       if (x) {
         if (x.velocity == 0) {
           delete gamechord[x.note];
@@ -250,6 +288,9 @@ var init = () => {
               ;
 
           var note = notes[state];
+          if (game > 0) {
+            note.opacity(1);
+          }
           note
             .rotate(-20)
             .animate(200)
@@ -270,7 +311,10 @@ var init = () => {
           if (!playing)
             window.setTimeout(() => {
               marker.opacity(0);
+              simon.playthrough = game > 0;
               gamereset();
+              simon.playthrough = false;
+              simon.length = 0;
               gameplayback();
             }, 1000);
         } else {
@@ -281,15 +325,16 @@ var init = () => {
             markers.add(this);
           });
 
+          chordTime = (seq[state].playTime - t)*tadj;
           if (seq[state].chord.length > 1) {
             var c = draw.set();
             seq[state].chord.map(x => {
-              chordTime = (x.playTime - t)*tadj;
               return c.add(x.shape);
             });
             var b = c.bbox();
             last_markers.add(
               draw.rect(b.width + gap*2, b.height + gap*2)
+                .opacity(game > 0 ? 0 : 1)
                 .move(b.x - gap, b.y - gap)
                 .radius(scale/2.5)
                 .fill('none')
@@ -297,11 +342,11 @@ var init = () => {
             );
           } else
             seq[state].chord.map((x, i) => {
-              chordTime = (x.playTime - t)*tadj;
               var p = x.param1 + offset;
               var n = p % 12;
               var h = (p - n)*7/12 + degrees[n] - 1;
               var last_marker = marker.clone()
+                .opacity(game > 0 || simon.playthrough && state >= simon.length ? 0 : 1)
                 .move(chordTime + scale/2 - gap, (high*7/12-h)*scale + scale/2 - gap)
                 ;
               //gs.to(last_marker.node, 1.5, {rotation: 360, transformOrigin: "center", repeat: -1, ease: gs.Linear.easeIn});
@@ -316,9 +361,18 @@ var init = () => {
 
           window.scroller.kill();
           window.scroller = gs.to(window, 1, {scrollTo: {x: chordTime - window.outerWidth/3, y: Math.min(last_markers.bbox().y - scale*3, last_markers.bbox().y2 + scale*3 - window.outerHeight)}});
-
-          return true;
         }
+
+        if (game > 0 && !simon.playthrough && state == simon.length) {
+          setTimeout(() => {
+            simon.playthrough = true;
+            gamereset();
+            simon.playthrough = false;
+            gamereset();
+          }, 1000);
+        }
+
+        return true;
       }
     };
     gamecheck();
@@ -363,7 +417,7 @@ var init = () => {
             });
           paused = false;
         };
-        var noteon = x => {
+        noteon = x => {
           var p = x.note;
           if (!gamecheck(x) && x.velocity > 0) {
             var n = p % 12;
