@@ -227,6 +227,7 @@ var init = () => {
     var synthchord = {};
     var gamechord = {};
     var gamecheck = x => {
+      console.log(state, game, simon.playthrough, simon.length);
       if (!game)
         return;
 
@@ -251,10 +252,12 @@ var init = () => {
               velocity: 0
             });
           }, endTime = seq[i].playTime + (seq[i].duration || 500) - startTime, seq[i]);
+          console.log(endTime);
         }
         setTimeout(() => {
           game = 1;
           gamereset();
+          console.log("end playthrough");
           simon.playthrough = false;
           for (var i = 0; i < simon.length; i++)
             notes[i].opacity(0);
@@ -331,6 +334,7 @@ var init = () => {
               marker.opacity(0);
               simon.playthrough = game > 0;
               gamereset();
+              console.log("end game");
               simon.playthrough = false;
               simon.length = 0;
               gameplayback();
@@ -385,6 +389,7 @@ var init = () => {
           setTimeout(() => {
             simon.playthrough = true;
             gamereset();
+            console.log("end simon");
             simon.playthrough = false;
             gamereset();
           }, 1000);
