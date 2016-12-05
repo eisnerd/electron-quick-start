@@ -250,7 +250,7 @@ var init = () => {
               note: x.param1 + offset,
               velocity: 0
             });
-          }, endTime = seq[i].playTime + seq[i].duration - startTime, seq[i]);
+          }, endTime = seq[i].playTime + (seq[i].duration || 500) - startTime, seq[i]);
         }
         setTimeout(() => {
           game = 1;
@@ -258,7 +258,7 @@ var init = () => {
           simon.playthrough = false;
           for (var i = 0; i < simon.length; i++)
             notes[i].opacity(0);
-        }, endTime + 200);
+        }, endTime + 500);
       }
 
       if (x) {
