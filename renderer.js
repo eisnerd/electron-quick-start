@@ -47,6 +47,28 @@ var init = () => {
       .map(x => { x.param1 += offset; x.playTime -= t + 600; return x; });
     midi.getMidiEvents = () => playback;
 
+    var chord_threshold = current_midi.chord_threshold || 0;
+    if (seq.length > 0) {
+      var chord = [];
+      var lastTime = seq[0].playTime + chord_threshold;
+      seq.map(x => {
+        if (x.playTime > lastTime) {
+          chord = [];
+          lastTime = x.playTime + chord_threshold;
+        }
+        chord.push(x);
+        x.chord = chord;
+      });
+      /*seq.map((x, i) => {
+        if (x.chord.length == 1) {
+          console.log(x.note, seq[i-1].playTime, seq[i].playTime, seq[i+1].playTime);
+        }
+        if (x.chord.length > 2) {
+          console.log(x.chord.map(x => x.param1 + "@" + x.playTime));
+        }
+      });*/
+    }
+
     var scale = 20;
     var gap = 4;
     var note = scale - gap * 2;
@@ -114,6 +136,24 @@ var init = () => {
         }
       }
 
+      const interval_colours = ["blue", "red", "magenta", "green", "green", "blue", "red", "blue", "green", "green", "magenta", "red"]
+      if (x.chord && x.chord.length > 1) {
+        x.chord.sort((a,b) => a.param1 > b.param1);
+        for (var i = 1; i < x.chord.length; i++) {
+          var a = x.chord[i - 1], b = x.chord[i];
+          var d = b.param1 - a.param1;
+          var W = draw.plain((d % 12) + "'".repeat(d / 12));
+          var r = W.bbox();
+          W
+            .font({
+              family:   'Helvetica',
+              size: 12
+            })
+            .fill(interval_colours[d % 12])
+            .move((x.playTime - t)*tadj - r.w/2 + scale/2, (high - a.param1 - d / 2)*7/12*scale - r.h/2)
+        }
+      }
+
       return x.shape = shapes[n]
         .clone()
         .opacity(game > 0 ? 0 : 1)
@@ -121,28 +161,6 @@ var init = () => {
         .fill(colours[n])
         ;
     });
-
-    var chord_threshold = current_midi.chord_threshold || 0;
-    if (seq.length > 0) {
-      var chord = [];
-      var lastTime = seq[0].playTime + chord_threshold;
-      seq.map(x => {
-        if (x.playTime > lastTime) {
-          chord = [];
-          lastTime = x.playTime + chord_threshold;
-        }
-        chord.push(x);
-        x.chord = chord;
-      });
-      /*seq.map((x, i) => {
-        if (x.chord.length == 1) {
-          console.log(x.note, seq[i-1].playTime, seq[i].playTime, seq[i+1].playTime);
-        }
-        if (x.chord.length > 2) {
-          console.log(x.chord.map(x => x.param1 + "@" + x.playTime));
-        }
-      });*/
-    }
 
     var mio = require("easymidi");
     var synths = [new mio.Output("synth", true)];
