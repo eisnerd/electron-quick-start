@@ -475,6 +475,9 @@ var init = () => {
         };
         mi.on('noteon', noteon);
         mu.on('noteon', noteon);
+        mu.on('cc', x => {
+          console.log(x);
+        });
         window.onbeforeunload = function (e) {
           console.log("cleaning up");
           mo.close();
@@ -482,7 +485,6 @@ var init = () => {
           mi.close();
         };
         window.onkeypress = e => {
-          console.log(e);
           if (e.key == " ") {
             if (game > 0)
               simon.length = 0;
