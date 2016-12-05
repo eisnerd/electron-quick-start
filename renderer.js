@@ -24,7 +24,19 @@ var init = () => {
   var load_midi = (err, buffer) => {
     var midi = new MIDIFile(err ? undefined : buffer);
 
-    var seq = midi.getMidiEvents().filter(x => x.subtype == 9 && current_midi.trainer(x)).filter((x, i) => !game || i < current_midi.notes);
+    var lastnoteon = {};
+    var events = midi.getMidiEvents().map(x => {
+      if (x.subtype == 9) {
+        lastnoteon[x.param1] = x;
+      } else if (x.subtype == 8) {
+        var y = lastnoteon[x.param1];
+        if (y)
+          y.duration = x.playTime - y.playTime;
+      }
+      return x;
+    });
+
+    seq = events.filter(x => x.subtype == 9 && current_midi.trainer(x)).filter((x, i) => !game || i < current_midi.notes);
     var pitches = seq.map(x => x.param1 + offset);
     var low = Math.min(...pitches), _high = Math.max(...pitches), high = Math.max(96, _high);
     var t = Math.min(...seq.map(x => x.playTime)) - 600, tmax = Math.max(...seq.map(x => x.playTime));
