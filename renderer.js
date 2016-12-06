@@ -214,6 +214,7 @@ var init = () => {
             for (var i in chord)
               chord[i].remove();
             chord = {};
+            simon.playthrough = false;
             gamereset();
             playing = false;
         });
@@ -235,8 +236,7 @@ var init = () => {
         game = -1;
         simon.playthrough = true;
         simon.length++;
-        for (var i = 0; i < simon.length; i++)
-          notes[i].opacity(1);
+        notes.map((x, i) => x.opacity(i < simon.length ? 1 : 0));
         var startTime = seq[0].playTime - 1000;
         var endTime;
         for (var i = 0; i < simon.length; i++) {
@@ -329,13 +329,12 @@ var init = () => {
             this.opacity(0.3);
             markers.add(this);
           });
-          if (!playing)
+          if (!playing && !simon.playthrough)
             window.setTimeout(() => {
               marker.opacity(0);
               simon.playthrough = game > 0;
               gamereset();
               console.log("end game");
-              simon.playthrough = false;
               simon.length = 0;
               gameplayback();
             }, 1000);
@@ -385,7 +384,7 @@ var init = () => {
           window.scroller = gs.to(window, 1, {scrollTo: {x: chordTime - window.outerWidth/3, y: Math.min(last_markers.bbox().y - scale*3, last_markers.bbox().y2 + scale*3 - window.outerHeight)}});
         }
 
-        if (game > 0 && !simon.playthrough && state == simon.length) {
+        if (game > 0 && !simon.playthrough && state == simon.length && state < seq.length) {
           setTimeout(() => {
             simon.playthrough = true;
             gamereset();
