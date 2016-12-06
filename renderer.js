@@ -76,7 +76,7 @@ var init = () => {
     var note = scale - gap * 2;
     var tadj = scale/current_midi.tempo/1000;
 
-    var draw = SVG('drawing').size(Math.max(0, (tmax-t+1000)*tadj, window.outerWidth - 12), game ? Math.max(0, window.outerHeight - 60, (high - low + 12)*7/12*scale) : Math.max(0, (high - low + 12)*7/12*scale));
+    var draw = SVG('drawing').size(Math.max(0, (tmax-t+1000)*tadj || 0, window.outerWidth - 12), Math.max(0, window.outerHeight - 60, (high - low + 12)*7/12*scale || 0));
     var stave = draw.group();
 
     var degrees = [1, 1.5, 2, 2.5, 3, 4, 4.5, 5, 5.5, 6, 6.5, 7];
@@ -231,7 +231,7 @@ var init = () => {
     var gamechord = {};
     var gamecheck = x => {
       console.log(state, game, simon.playthrough, simon.length);
-      if (!game)
+      if (!game || !seq.length)
         return;
 
       if (state == -1 && game > 0 && !simon.playthrough) {

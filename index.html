@@ -18,7 +18,6 @@
         <span class="title">
           instructions
         </span>
-        <btn @select="_score(-1)" option="none" :current="state.score < 0 ? 'none' : scores[state.score]"></btn>
         <template v-for="(x, i) in scores">
           <btn @select="_score(i)" :option="x.name" :current="state.score < 0 ? 'none' : scores[state.score].name"></btn>
         </template>
