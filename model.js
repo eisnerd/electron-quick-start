@@ -15,7 +15,6 @@ module.exports = {
     trainer: x => x.track == 1,
     playback: x=> true,
     offset: 0,
-    notes: 100,
     tempo: 0.17
   }, {
     name: "Mary had a Little Lamb",
@@ -53,7 +52,6 @@ module.exports = {
     trainer: x => x.track == 1,
     playback: x=> true,
     offset: 0,
-    notes: 100000,
     tempo: 0.22
   }, {
     name: "Come, heavy sleep",
@@ -62,7 +60,6 @@ module.exports = {
     trainer: x => x.track == 1,
     playback: x=> true,
     offset: 0,
-    notes: 100000,
     tempo: 0.25
   }, {
     name: "Für Alina",
@@ -70,7 +67,6 @@ module.exports = {
     trainer: x => true,
     playback: x=> true,
     offset: 0,
-    notes: 100000,
     chord_threshold: 25,
     tempo: 0.75
   }]
