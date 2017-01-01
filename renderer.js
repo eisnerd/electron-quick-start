@@ -304,16 +304,18 @@ var init = () => {
           );
 
           var w = seq[state].word;
-          if (w && false)
-            w.animate(200)
+          if (w)
+            gs.to(w.node, 0.1, {scale: 1.8, transformOrigin: "center", yoyo: true, repeat: 1});
+            /*w.animate(200)
               .scale(1.8)
               .situation.ease = pos => 1-(pos-0.5)*(pos-0.5)*4
-              ;
+              ;*/
 
           var note = notes[state];
           if (game > 0) {
             note.opacity(1);
           }
+          gs.fromTo(note.node, 0.1, {rotation: -20, scale: 1}, { rotation: 20, scale: 1.8, transformOrigin: "center", yoyo: true, repeat: 1, clearProps: "rotation" });
           /*note
             .rotate(-20)
             .animate(200)
