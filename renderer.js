@@ -342,10 +342,13 @@ var init = () => {
             }, 1000);
         } else {
           last_markers.each(function() {
-            if (this.fx)
-              this.fx.pause();
-            this.opacity(0.3);
-            markers.add(this);
+            //if (this.fx)
+              //this.fx.pause();
+            //this.opacity(0.3);
+            markers.add(this
+              .clone()
+              .opacity(0.3)
+            );
           });
 
           chordTime = (seq[state].playTime - t)*tadj;
@@ -368,18 +371,22 @@ var init = () => {
               var p = x.param1 + offset;
               var n = p % 12;
               var h = (p - n)*7/12 + degrees[n] - 1;
-              var last_marker = marker.clone()
-                .opacity(game > 0 || simon.playthrough && state >= simon.length ? 0 : 1)
-                .move(chordTime + scale/2 - gap, (high*7/12-h)*scale + scale/2 - gap)
-                ;
-              last_marker.fx = gs.to(last_marker.node, 1.5, {rotation: 360, transformOrigin: "center", repeat: -1, ease: gs.Linear.easeIn});
-              /*last_marker
-                .animate(1000)
-                .rotate(360)
-                .loop()
-                ;*/
-
-              last_markers.add(last_marker);
+              var last_marker = last_markers.members.length <= i ? marker.clone() : last_markers.members[i];
+              if (last_marker.fx)
+                gs.to(last_marker.node, 0.1, {x: chordTime + scale/2 - gap, y: (high*7/12-h)*scale + scale/2 - gap});
+              else {
+                last_marker
+                  .opacity(game > 0 || simon.playthrough && state >= simon.length ? 0 : 1)
+                  .move(chordTime + scale/2 - gap, (high*7/12-h)*scale + scale/2 - gap)
+                  ;
+                  last_marker.fx = gs.to(last_marker.node, 1.5, {rotation: 360, transformOrigin: "center", repeat: -1, ease: gs.Linear.easeIn});
+                /*last_marker
+                  .animate(1000)
+                  .rotate(360)
+                  .loop()
+                  ;*/
+                last_markers.add(last_marker);
+              }
             });
 
           window.scroller.kill();
