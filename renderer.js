@@ -304,7 +304,7 @@ var init = () => {
           );
 
           var w = seq[state].word;
-          if (w)
+          if (w && false)
             w.animate(200)
               .scale(1.8)
               .situation.ease = pos => 1-(pos-0.5)*(pos-0.5)*4
@@ -314,20 +314,20 @@ var init = () => {
           if (game > 0) {
             note.opacity(1);
           }
-          note
+          /*note
             .rotate(-20)
             .animate(200)
             .scale(1.8)
             .rotate(40)
             .after(() => note.rotate(0))
-            .situation.ease = pos => 1-(pos-0.5)*(pos-0.5)*4
+            .situation.ease = pos => 1-(pos-0.5)*(pos-0.5)*4*/
         }
 
         state += N;
         if (state == seq.length) {
           last_markers.each(function() {
             if (this.fx)
-              this.fx.stop();
+              this.fx.pause();
             this.opacity(0.3);
             markers.add(this);
           });
@@ -343,7 +343,7 @@ var init = () => {
         } else {
           last_markers.each(function() {
             if (this.fx)
-              this.fx.stop();
+              this.fx.pause();
             this.opacity(0.3);
             markers.add(this);
           });
@@ -372,12 +372,12 @@ var init = () => {
                 .opacity(game > 0 || simon.playthrough && state >= simon.length ? 0 : 1)
                 .move(chordTime + scale/2 - gap, (high*7/12-h)*scale + scale/2 - gap)
                 ;
-              //gs.to(last_marker.node, 1.5, {rotation: 360, transformOrigin: "center", repeat: -1, ease: gs.Linear.easeIn});
-              last_marker
+              last_marker.fx = gs.to(last_marker.node, 1.5, {rotation: 360, transformOrigin: "center", repeat: -1, ease: gs.Linear.easeIn});
+              /*last_marker
                 .animate(1000)
                 .rotate(360)
                 .loop()
-                ;
+                ;*/
 
               last_markers.add(last_marker);
             });
@@ -452,13 +452,13 @@ var init = () => {
               .fill(colours[n])
             resume();
             if (score) {
-              y
+              /*y
                 .animate(100000)
                 .x(-5000)
                 .after(() => {
                   y.remove();
                   anim.delete(y);
-                })
+                })*/
               anim.add(y);
             } else {
               if (chord[p])
