@@ -298,7 +298,7 @@ var init = () => {
           synths.forEach(synth =>
             synth.send('noteon', {
               note: x.note,
-              velocity: Math.min(127, 10 + x.velocity * 1.5),
+              velocity: Math.max(80, Math.min(127, 30 + x.velocity * 1.2)),
               channel: 0
             })
           );
