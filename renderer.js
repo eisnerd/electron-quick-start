@@ -461,6 +461,7 @@ var init = () => {
               .fill(colours[n])
             resume();
             if (score) {
+              gs.to(y.node, 100, {x: -5000});
               /*y
                 .animate(100000)
                 .x(-5000)
