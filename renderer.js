@@ -165,7 +165,7 @@ var init = () => {
     });
 
     var mio = require("easymidi");
-    var synths = [new mio.Output("synth", true)];
+    var synths = [];//new mio.Output("synth", true)];
 
     chordTime = window.outerWidth - scale;
     chord = {};
