@@ -268,7 +268,7 @@ var init = () => {
 
       if (x) {
         if (x.velocity == 0) {
-          delete gamechord[x.note%12];
+          delete gamechord[x.note];
           delete synthchord[x.note];
           synths.forEach(synth =>
             synth.send('noteoff', {
@@ -278,11 +278,11 @@ var init = () => {
             })
           );
         } else
-          gamechord[x.note%12] = true;
+          gamechord[x.note] = true;
       }
 
       var N = 1;
-      if (state == -1 || state < seq.length && x.velocity > 0 && ((N = seq[state].chord.length) == 1 || Object.keys(gamechord).length > 0) && seq[state].chord.some((x, i) => gamechord[(x.param1 + offset)%12])) {
+      if (state == -1 || state < seq.length && x.velocity > 0 && ((N = seq[state].chord.length) == 1 || Object.keys(gamechord).length == N) && seq[state].chord.every((x, i) => gamechord[x.param1 + offset])) {
         gamechord = {};
         if (x) {
           if (synthchord[x.note])
