@@ -64,7 +64,7 @@ module.exports = {
   }, {
     name: "Für Alina",
     music: "alina.mid",
-    trainer: x => true,
+    trainer: x => true,//x.track == 1,
     playback: x=> true,
     offset: 0,
     chord_threshold: 25,

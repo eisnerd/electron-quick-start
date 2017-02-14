@@ -226,6 +226,7 @@ var init = () => {
       });
     };
     //gameplayback();
+    var echo = true;
     var noteon;
     var synthchord = {};
     var gamechord = {};
@@ -295,6 +296,7 @@ var init = () => {
             );
 
           synthchord[x.note] = true;
+          if (echo)
           synths.forEach(synth =>
             synth.send('noteon', {
               note: x.note,
@@ -424,9 +426,9 @@ var init = () => {
       var mo = new mio.Output(usbout[0], false);
       synths.push(mo);
       mo.send('cc', {
-        controller: 123,
-        value: 0,
-        channel: 0
+	controller: 123,
+	value: 0,
+	channel: 0
       });
 
       var usbin = mio.getInputs().filter(/ /.exec.bind(/^CH|usb|VMPK/i));
@@ -495,7 +497,33 @@ var init = () => {
           mi.removeAllListeners();
           mi.close();
         };
+        var sustain = false;
         window.onkeypress = e => {
+	  if (e.key == "s") {
+            sustain = !sustain;
+            if (sustain) {
+      mo.send('cc', {
+        controller: 64,
+        value: 127,
+        channel: 0
+      });
+            } else {
+      mo.send('cc', {
+	controller: 123,
+	value: 0,
+	channel: 0
+      });
+
+      mo.send('cc', {
+        controller: 64,
+        value: 0,
+        channel: 0
+      });
+            }
+          }
+          if (e.key == "e") {
+            echo = !echo;
+          }
           if (e.key == " ") {
             if (game > 0)
               simon.length = 0;
