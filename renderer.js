@@ -50,11 +50,14 @@ var init = () => {
     midi.getMidiEvents = () => playback;
 
     var chord_threshold = current_midi.chord_threshold || 0;
+    var any_chords = false;
     if (seq.length > 0) {
       var chord = [];
       var lastTime = seq[0].playTime + chord_threshold;
       seq.map(x => {
         if (x.playTime > lastTime) {
+          if (chord.length > 1)
+            any_chords = true;
           chord = [];
           lastTime = x.playTime + chord_threshold;
         }
@@ -70,6 +73,7 @@ var init = () => {
         }
       });*/
     }
+    var note_coalesce = any_chords? 200 : 12;
 
     var scale = 20;
     var gap = 4;
@@ -269,7 +273,7 @@ var init = () => {
 
       if (x) {
         if (x.velocity == 0) {
-          delete gamechord[x.note%12];
+          delete gamechord[x.note%note_coalesce];
           delete synthchord[x.note];
           synths.forEach(synth =>
             synth.send('noteoff', {
@@ -279,11 +283,11 @@ var init = () => {
             })
           );
         } else
-          gamechord[x.note%12] = true;
+          gamechord[x.note%note_coalesce] = true;
       }
 
       var N = 1;
-      if (state == -1 || state < seq.length && x.velocity > 0 && ((N = seq[state].chord.length) == 1 || Object.keys(gamechord).length > 0) && seq[state].chord.some((x, i) => gamechord[(x.param1 + offset)%12])) {
+      if (state == -1 || state < seq.length && x.velocity > 0 && ((N = seq[state].chord.length) == 1 || Object.keys(gamechord).length >= N) && seq[state].chord.every((x, i) => gamechord[(x.param1 + offset)%note_coalesce])) {
         gamechord = {};
         if (x) {
           if (synthchord[x.note])
