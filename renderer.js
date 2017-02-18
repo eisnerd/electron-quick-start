@@ -502,23 +502,23 @@ var init = () => {
 	  if (e.key == "s") {
             sustain = !sustain;
             if (sustain) {
-      mo.send('cc', {
-        controller: 64,
-        value: 127,
-        channel: 0
-      });
+              mo.send('cc', {
+                controller: 64,
+                value: 127,
+                channel: 0
+              });
             } else {
-      mo.send('cc', {
-	controller: 123,
-	value: 0,
-	channel: 0
-      });
+              mo.send('cc', {
+                controller: 123,
+                value: 0,
+                channel: 0
+              });
 
-      mo.send('cc', {
-        controller: 64,
-        value: 0,
-        channel: 0
-      });
+              mo.send('cc', {
+                controller: 64,
+                value: 0,
+                channel: 0
+              });
             }
           }
           if (e.key == "e") {
