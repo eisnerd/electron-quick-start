@@ -300,7 +300,7 @@ var init = () => {
             );
 
           synthchord[x.note] = true;
-          if (echo)
+          if (echo && !playing)
           synths.forEach(synth =>
             synth.send('noteon', {
               note: x.note,
