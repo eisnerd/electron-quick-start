@@ -1,12 +1,12 @@
 {
-  "name": "electron-quick-start",
+  "name": "skeytles",
   "version": "1.0.0",
-  "description": "A minimal Electron application",
+  "description": "Music score activity for a USB midi keyboard",
   "main": "main.js",
   "scripts": {
     "start": "electron ."
   },
-  "repository": "https://github.com/electron/electron-quick-start",
+  "repository": "https://github.com/eisnerd/skeytles",
   "keywords": [
     "Electron",
     "quick",
