@@ -73,7 +73,7 @@ var init = () => {
         }
       });*/
     }
-    var note_coalesce = any_chords? 200 : 12;
+    var song_note_coalesce = any_chords? 1000 : 12;
 
     var scale = 20;
     var gap = 4;
@@ -84,7 +84,7 @@ var init = () => {
     var stave = draw.group();
 
     var degrees = [1, 1.5, 2, 2.5, 3, 4, 4.5, 5, 5.5, 6, 6.5, 7];
-    var colours = ["red", "red", "blue", "blue", "saddlebrown", "lime", "lime", "yellow", "yellow", "darkviolet", "darkviolet", "grey"];
+    var colours = ["red", "red", "cornflowerblue", "cornflowerblue", "saddlebrown", "lime", "lime", "yellow", "yellow", "darkviolet", "darkviolet", "grey"];
     var circle = draw.circle(note).move(-scale, -scale);
     circle.stroke({ color: "black", opacity: 0, width: 0 });
     var square = draw.rect(note, note).move(-scale, scale);
@@ -235,9 +235,11 @@ var init = () => {
     var synthchord = {};
     var gamechord = {};
     var gamecheck = x => {
-      console.log(state, game, simon.playthrough, simon.length);
+      console.log(state, game, simon.playthrough, simon.length, playing);
       if (!game || !seq.length)
         return;
+
+      let note_coalesce = playing? 1000 : song_note_coalesce;
 
       if (state == -1 && game > 0 && !simon.playthrough) {
         game = -1;
@@ -275,6 +277,7 @@ var init = () => {
         if (x.velocity == 0) {
           delete gamechord[x.note%note_coalesce];
           delete synthchord[x.note];
+          console.log('relaying note stop ' + x.note);
           synths.forEach(synth =>
             synth.send('noteoff', {
               note: x.note,
@@ -287,17 +290,22 @@ var init = () => {
       }
 
       var N = 1;
+      console.log(x);
+      if (playing && x.channel != 0)
+        return true;
       if (state == -1 || state < seq.length && x.velocity > 0 && ((N = seq[state].chord.length) == 1 || Object.keys(gamechord).length >= N) && seq[state].chord.every((x, i) => gamechord[(x.param1 + offset)%note_coalesce])) {
         gamechord = {};
         if (x) {
-          if (synthchord[x.note])
-            synths.forEach(synth =>
+          if (synthchord[x.note]) {
+            console.log('stopping synthchord note ' + x.note);
+            /*synths.forEach(synth =>
               synth.send('noteoff', {
                 note: x.note,
                 velocity: 0,
                 channel: 0
               })
-            );
+            );*/
+          }
 
           synthchord[x.note] = true;
           if (echo && !playing)
@@ -527,6 +535,9 @@ var init = () => {
           }
           if (e.key == "e") {
             echo = !echo;
+          }
+          if (e.key == "p") {
+            gameplayback();
           }
           if (e.key == " ") {
             if (game > 0)
