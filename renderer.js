@@ -586,7 +586,7 @@ vm.$watch('state.score', init);
 init();
 var change = () => {
   try {
-    require('fs').writeFile('./state.json', JSON.stringify(model.state));
+    require('fs').writeFileSync('./state.json', JSON.stringify(model.state));
     location.reload();
   } catch (e) {
   }

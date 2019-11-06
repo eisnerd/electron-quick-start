@@ -17,15 +17,16 @@
   "author": "GitHub",
   "license": "CC0-1.0",
   "devDependencies": {
-    "electron": "^1.4.1"
+    "electron": "^7.1.0"
   },
   "dependencies": {
-    "async": "^2.1.4",
+    "async": "^3.1.0",
     "debounce": "^1.0.0",
-    "easymidi": "0.0.2",
+    "easymidi": "^1.0.2",
+    "gasp": "0.0.2",
     "gsap": "^1.19.0",
-    "midi": "^0.9.5",
-    "midifile": "^1.0.4",
+    "midi": "^1.0.0",
+    "midifile": "^2.0.0",
     "midiplayer": "https://github.com/eisnerd/MIDIPlayer#master",
     "svg.js": "^2.3.6",
     "vue": "^2.1.3"
