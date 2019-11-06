@@ -208,7 +208,7 @@ var init = () => {
       navigator.requestMIDIAccess().then(function(midiAccess) {
         // Creating player
         var midiPlayer = new MIDIPlayer({
-          'outputs': Array.from(midiAccess.outputs.values()).filter(x => x.name == "score" || /^CH|usb|tim.*0/i.exec(x.name))
+          'outputs': Array.from(midiAccess.outputs.values()).filter(x => x.name == "score" || /^CH|usb|tim.*0|zyn|midi thr/i.exec(x.name))
         });
 
         // Loading the midiFile instance in the player
@@ -433,7 +433,7 @@ var init = () => {
       shapes = [circle, square, circle, square, circle, circle, square, circle, square, circle, square, circle];
     }
 
-    var usbout = mio.getOutputs().filter(/ /.exec.bind(/^CH|usb|tim.*0/i));
+    var usbout = mio.getOutputs().filter(/ /.exec.bind(/^CH|usb|tim.*0|zyn|midi thr/i));
     if (usbout.length) {
       var mo = new mio.Output(usbout[0], false);
       synths.push(mo);
