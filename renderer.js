@@ -420,7 +420,14 @@ var init = () => {
         }
 
         return true;
-      }
+      } else if (echo && !playing)
+        synths.forEach(synth =>
+          synth.send('noteon', {
+            note: x.note,
+            velocity: x.velocity,
+            channel: 1
+          })
+        );
     };
     gamecheck();
 
