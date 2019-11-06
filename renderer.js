@@ -437,11 +437,19 @@ var init = () => {
     if (usbout.length) {
       var mo = new mio.Output(usbout[0], false);
       synths.push(mo);
-      mo.send('cc', {
-	controller: 123,
-	value: 0,
-	channel: 0
-      });
+      mo.sendAllChannels = (m, data) => {
+        var d = Object.assign({}, data);
+        for (var i = 0; i < 10; i++) {
+          d.channel = i;
+          mo.send(m, d);
+        }
+      };
+      mo.sendNotesOff = () =>
+        mo.sendAllChannels('cc', {
+          controller: 123,
+          value: 0
+        });
+      mo.sendNotesOff();
 
       var usbin = mio.getInputs().filter(/ /.exec.bind(/^CH|usb|VMPK/i));
       if (usbin.length) {
@@ -514,22 +522,16 @@ var init = () => {
 	  if (e.key == "s") {
             sustain = !sustain;
             if (sustain) {
-              mo.send('cc', {
+              mo.sendAllChannels('cc', {
                 controller: 64,
                 value: 127,
-                channel: 0
               });
             } else {
-              mo.send('cc', {
-                controller: 123,
-                value: 0,
-                channel: 0
-              });
+              mo.sendNotesOff();
 
-              mo.send('cc', {
+              mo.sendAllChannels('cc', {
                 controller: 64,
                 value: 0,
-                channel: 0
               });
             }
           }
