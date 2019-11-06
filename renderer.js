@@ -221,8 +221,8 @@ var init = () => {
               chord[i].remove();
             chord = {};
             simon.playthrough = false;
+	    playing = false;
             gamereset();
-            playing = false;
         });
 
       }, function() {
