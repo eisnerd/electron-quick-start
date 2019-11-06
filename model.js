@@ -46,6 +46,15 @@ module.exports = {
     //tempo: 0.52 // without words
     tempo: 0.45
   }, {
+    name: "Give me oil in my lamp",
+    music: "sing_hosanna.mid",
+    words: "give me oil in my lamp keep me bur- ning give me oil in my lamp i pray give me oil in my lamp keep my bur- ning keep me bur- ning til the break of day",
+    trainer: x => x.track == 0,
+    playback: x => true,
+    offset: 2,
+    notes: 37,
+    tempo: 0.2
+  }, {
     name: "Dear, if you change",
     music: "downland_songes_or_ayres_i-book_7_(c)icking-archive.mid",
     words: "dear i- i- if you change i'll ne- ver choose a- gain sweet if you shrink i'll ne- ver think of love fair if you fail i'll judge all beau- ty vain wise if too weak more wit i'll ne- ver proove dear sweet fair wise change shrink nor be not weak and on my faith my faith shall ne- ver break dear sweet fair wise change shrink nor be not weak and on my faith my faith shall ne- ver break",

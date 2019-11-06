@@ -18,8 +18,8 @@ var init = () => {
   var game = model.state.mode - 1;
   var score = model.state.mode == 1;
 
-  var current_midi = model.scores[model.state.score] || { offset: 0 };
-  var offset = current_midi.offset;
+  var current_midi = model.scores[model.state.score] || {};
+  var offset = current_midi.offset || 0;
 
   var load_midi = (err, buffer) => {
     var midi = new MIDIFile(err ? undefined : buffer);
