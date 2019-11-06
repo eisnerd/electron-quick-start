@@ -458,10 +458,7 @@ var init = () => {
         });
       mo.sendNotesOff();
 
-      var usbin = mio.getInputs().filter(/ /.exec.bind(/^CH|usb|VMPK/i));
-      if (usbin.length) {
         var mi = new mio.Input("score", true);
-        var mu = new mio.Input(usbin[0], false);
         var paused = false;
         var pause = () => {
           anim.forEach(y => {
@@ -514,9 +511,26 @@ var init = () => {
           }
         };
         mi.on('noteon', noteon);
-        mu.on('noteon', noteon);
-        mu.on('cc', x => {
-          console.log(x);
+        var usbin, mu, lastPhysical, hookup = () => {
+          console.log(mio.getInputs());
+          lastPhysical = lastPhysical || (usbin && usbin.length);
+          usbin = mio.getInputs().filter(/ /.exec.bind(/^CH|usb|VMPK/i));
+          if (lastPhysical && !usbin.length)
+            return;
+          if (mu)
+            mu.removeAllListeners();
+          mu = usbin.length ? new mio.Input(usbin[0], false) : new mio.Input("keyboard", true);
+          console.log("Listening to midi device " + (usbin.length ? usbin[0] : "keyboard"));
+          mu.on('noteon', noteon);
+          mu.on('cc', x => {
+            console.log(x);
+          });
+        };
+        hookup();
+        navigator.requestMIDIAccess().then(function(midiAccess) {
+          midiAccess.onstatechange = function() {
+            hookup();
+          };
         });
         window.onbeforeunload = function (e) {
           console.log("cleaning up");
@@ -565,7 +579,6 @@ var init = () => {
             seq[state].chord.map(x => noteon({note: x.param1 + offset, velocity: 80}));
           }
         };
-      }
     }
     console.log("ready");
   };
