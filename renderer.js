@@ -144,7 +144,7 @@ var init = () => {
 
       const interval_colours = ["blue", "red", "magenta", "green", "green", "blue", "red", "blue", "green", "green", "magenta", "red"]
       if (x.chord && x.chord.length > 1) {
-        x.chord.sort((a,b) => a.param1 > b.param1);
+        x.chord.sort((a,b) => a.param1 - b.param1);
         for (var i = 1; i < x.chord.length; i++) {
           var a = x.chord[i - 1], b = x.chord[i];
           var d = b.param1 - a.param1;
