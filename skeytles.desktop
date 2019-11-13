@@ -2,7 +2,7 @@
 Name=Skeytles music score activity
 GenericName=Skeytles music score activity
 Comment=Play simple music scores in bright skittles colours
-Exec=sh -c 'i3-show-if-running skeytles && exit; i3-free-up 2; cd $HOME/projects/skeytles; GOOGLE_APPLICATION_CREDENTIALS=$PWD/google-services.json $HOME/.nvm/versions/node/v11.3.0/bin/npm start'
+Exec=sh -c 'i3-show-if-running skeytles && exit; i3-free-up 2; cd $HOME/projects/skeytles; if ! pgrep yoshimi; then yoshimi --no-gui --load=yosh.xmz --alsa-audio --alsa-midi & fi; connect_yoshimi && GOOGLE_APPLICATION_CREDENTIALS=$PWD/google-services.json $HOME/.nvm/versions/node/v13.1.0/bin/npm start'
 Icon=sound
 Terminal=false
 Type=Application
