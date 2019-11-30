@@ -60,6 +60,8 @@ module.exports = {
     words: "dear i- i- if you change i'll ne- ver choose a- gain sweet if you shrink i'll ne- ver think of love fair if you fail i'll judge all beau- ty vain wise if too weak more wit i'll ne- ver proove dear sweet fair wise change shrink nor be not weak and on my faith my faith shall ne- ver break dear sweet fair wise change shrink nor be not weak and on my faith my faith shall ne- ver break",
     trainer: x => x.track == 1,
     playback: x=> true,
+    simon_start: 1,
+    simon_increment: 3,
     offset: 0,
     tempo: 0.22
   }, {
@@ -68,6 +70,8 @@ module.exports = {
     words: "come hea- vy sleep i- im- age of true death and clo- se up the- e- se my wea- ry weep- ing eyes whose spring of tears doth stop my vi- tal breath and tears my soul with sor- rows sign- swoll'n cries come and pos- sess my ti- red thoughts wor- or- orn soul that li- ving dies that li- ving dies that li- ving dies 'til thou on me be stole come and pos- sess my ti- red thoughts wor- or- orn soul that li- ving dies that li- ving dies that li- ving dies 'til thou on me be stole",
     trainer: x => x.track == 1,
     playback: x=> true,
+    simon_start: 1,
+    simon_increment: 3,
     offset: 0,
     tempo: 0.25
   }, {

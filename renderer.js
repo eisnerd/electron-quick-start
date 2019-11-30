@@ -177,7 +177,7 @@ var init = () => {
     var state = -1;
     var simon = {
       playthrough: false,
-      length: 0
+      length: current_midi.simon_start || 1
     };
     var marker = draw.group();
     var ray = marker.path('M 12 2 H 30 a 1 1 0 0 1 -1 6 L 12 2');
@@ -234,6 +234,17 @@ var init = () => {
     var noteon;
     var synthchord = {};
     var gamechord = {};
+    var simon_next = function() {
+      let incr = current_midi.simon_increment || 1;
+      var next_note = seq[simon.length].param1;
+      for (var i = 1; i < incr + 3 /* max incr even for repeated notes */; i++)
+         if (++simon.length < notes.length) {
+            if (next_note != seq[simon.length].param1)
+              next_note = undefined;
+            if (i >= incr && next_note === undefined)
+              break;
+         }
+    }
     var gamecheck = x => {
       console.log(state, game, simon.playthrough, simon.length, playing);
       if (!game || !seq.length)
@@ -244,7 +255,7 @@ var init = () => {
       if (state == -1 && game > 0 && !simon.playthrough) {
         game = -1;
         simon.playthrough = true;
-        simon.length++;
+        simon_next();
         notes.map((x, i) => x.opacity(i < simon.length ? 1 : 0));
         var startTime = seq[0].playTime - 1000;
         var endTime;
@@ -270,7 +281,7 @@ var init = () => {
           simon.playthrough = false;
           for (var i = 0; i < simon.length; i++)
             notes[i].opacity(0);
-        }, endTime + 500);
+        }, endTime + (simon.length <= (current_midi.simon_start || 1) + (current_midi.simon_increment || 1) ? 1500 : 500));
       }
 
       if (x) {
@@ -340,7 +351,7 @@ var init = () => {
         }
 
         state += N;
-        if (state == seq.length) {
+        if (state >= seq.length) {
           last_markers.each(function() {
             if (this.fx)
               this.fx.pause();
