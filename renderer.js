@@ -399,11 +399,13 @@ var init = () => {
               var n = p % 12;
               var h = (p - n)*7/12 + degrees[n] - 1;
               var last_marker = last_markers.members.length <= i ? marker.clone() : last_markers.members[i];
+              last_marker
+                  .opacity(game > 0 || simon.playthrough && state >= simon.length ? 0 : 1)
+                  ;
               if (last_marker.fx)
                 gs.to(last_marker.node, 0.1, {x: chordTime + scale/2 - gap, y: (high*7/12-h)*scale + scale/2 - gap});
               else {
                 last_marker
-                  .opacity(game > 0 || simon.playthrough && state >= simon.length ? 0 : 1)
                   .move(chordTime + scale/2 - gap, (high*7/12-h)*scale + scale/2 - gap)
                   ;
                   last_marker.fx = gs.to(last_marker.node, 1.5, {rotation: 360, transformOrigin: "center", repeat: -1, ease: gs.Linear.easeIn});
