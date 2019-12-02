@@ -17,8 +17,15 @@ var init = () => {
 
   var game = model.state.mode - 1;
   var score = model.state.mode == 1;
+  let book = game == 2 ? model.exercises : model.scores;
+  if (game == 2) // Excercises use song mode
+    game = -1;
 
-  var current_midi = model.scores[model.state.score] || {};
+  var current_midi = book[Math.min(book.length - 1, model.state.score)] || {};
+  let True = () => true;
+  current_midi.trainer = current_midi.trainer || True;
+  current_midi.playback = current_midi.playback || True;
+  current_midi.tempo = current_midi.tempo || 0.15;
   var offset = current_midi.offset || 0;
 
   var load_midi = (err, buffer) => {
@@ -156,7 +163,7 @@ var init = () => {
               size: 12
             })
             .fill(interval_colours[d % 12])
-            .move((x.playTime - t)*tadj - r.w/2 + scale/2, (high - a.param1 - d / 2)*7/12*scale - r.h/2)
+            .move((x.playTime - t)*tadj - r.w/2 + scale/2, (high - a.param1 - offset - d / 2)*7/12*scale + r.h/4)
         }
       }
 

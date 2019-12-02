@@ -23,6 +23,10 @@ var vm = new Vue({
     },
     _score: function(i) {
       this.state.score = i
+    },
+    score_name: function() {
+      let book = this.modes[this.state.mode] == 'Exercises' ? this.exercises : this.scores;
+      return this.state.score < 0 ? 'none' : book[Math.min(book.length - 1, this.state.score)].name;
     }
   }
 });

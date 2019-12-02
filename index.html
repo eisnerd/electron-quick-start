@@ -18,8 +18,8 @@
         <span class="title">
           instructions
         </span>
-        <template v-for="(x, i) in scores">
-          <btn @select="_score(i)" :option="x.name" :current="state.score < 0 ? 'none' : scores[state.score].name"></btn>
+        <template v-for="(x, i) in (modes[state.mode] == 'Exercises'? exercises : scores)">
+          <btn @select="_score(i)" :option="x.name" :current="score_name()"></btn>
         </template>
       </div>
     </div>

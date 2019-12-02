@@ -6,7 +6,8 @@ module.exports = {
   modes: [
     "Songs",
     "Drawing",
-    "Simon says"
+    "Simon says",
+    "Exercises"
   ],
   scores: [{
     name: "Rain, Rain Go Away",
@@ -82,5 +83,31 @@ module.exports = {
     offset: 0,
     chord_threshold: 25,
     tempo: 0.75
+  }],
+  exercises: [{
+    name: "Scale octave right CMaj",
+    music: "scale_octave_right_cmaj.mid",
+    tempo: 0.1
+  }, {
+    name: "Scale octave left CMaj",
+    music: "scale_octave_left_cmaj.mid",
+    tempo: 0.1
+  }, {
+    name: "Scale octave contrary CMaj",
+    music: "scale_octave_contrary_cmaj.mid",
+    tempo: 0.1
+  }, {
+    name: "Scale octave parallel CMaj",
+    music: "scale_octave_parallel_cmaj.mid",
+    tempo: 0.1
+  }, {
+    name: "Arp crab right CMaj",
+    music: "arp_crab_right_cmaj.mid",
+    tempo: 0.1
+  }, {
+    name: "Arp crab left CMaj",
+    music: "arp_crab_left_cmaj.mid",
+    offset: 12,
+    tempo: 0.1
   }]
 };
