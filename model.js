@@ -1,5 +1,6 @@
 module.exports = {
   state: {
+    show_fingering: 0,
     mode: 0,
     score: 0
   },
@@ -50,6 +51,8 @@ module.exports = {
     name: "Give me oil in my lamp",
     music: "sing_hosanna.mid",
     words: "give me oil in my lamp keep me bur- ning give me oil in my lamp i pray give me oil in my lamp keep my bur- ning keep me bur- ning til the break of day",
+    //fingering: "5554323212555432435554323212234554321",
+    fingering: "5553212121555321325553212121123554321",
     trainer: x => x.track == 0,
     playback: x => true,
     offset: 2,
@@ -59,6 +62,7 @@ module.exports = {
     name: "All the pretty little horses",
     music: "all_the_pretty_little_horses.mid",
     words: "hush a bye don't you cry go to sleep my lit- tle ba- by when you wake you shall have all the pret- ty lit- tle hor- ses blacks and bays dap- ples and grays all the pret- ty lit- le hor- ses",
+    fingering: "144323543132111443235431321112233553214321114432354313211",
     trainer: x => x.track == 0,
     offset: 2,
     tempo: 0.2

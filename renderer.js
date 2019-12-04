@@ -118,6 +118,7 @@ var init = () => {
         .fill(colours[n])
     }
     return*/
+    var fingering = current_midi.fingering || "";
     var words = (current_midi.words || "").split(" ");
     var word = i => /(.*[^-]+)(-)?(.)?|^$/.exec(words.length > i ? words[i] : "");
     var notes = seq.map((x, i) => {
@@ -167,9 +168,22 @@ var init = () => {
         }
       }
 
+      var shown = game > 0 ? 0 : 1;
+
+      W = draw.plain(fingering[i] || "")
+        .font({
+          family:   'Helvetica',
+          size: 12
+        })
+        ;
+      x.fingering = W
+        .opacity(model.state.show_fingering? shown : 0)
+        .move((x.playTime - t)*tadj - W.bbox().w + scale/2 - gap*3, (high*7/12-h)*scale - W.bbox().h/2 + shapes[n].bbox().h/2)
+        ;
+
       return x.shape = shapes[n]
         .clone()
-        .opacity(game > 0 ? 0 : 1)
+        .opacity(shown)
         .move((x.playTime - t)*tadj, (high*7/12-h)*scale)
         .fill(colours[n])
         ;
@@ -263,7 +277,11 @@ var init = () => {
         game = -1;
         simon.playthrough = true;
         simon_next();
-        notes.map((x, i) => x.opacity(i < simon.length ? 1 : 0));
+        seq.map((x, i) => {
+          var shown = i < simon.length ? 1 : 0;
+          x.shape.opacity(shown);
+          x.fingering.opacity(model.state.show_fingering? shown : 0);
+        });
         var startTime = seq[0].playTime - 1000;
         var endTime;
         for (var i = 0; i < simon.length; i++) {
@@ -286,8 +304,10 @@ var init = () => {
           gamereset();
           console.log("end playthrough");
           simon.playthrough = false;
-          for (var i = 0; i < simon.length; i++)
-            notes[i].opacity(0);
+          seq.forEach(x => {
+            x.fingering.opacity(0);
+            x.shape.opacity(0);
+          });
         }, endTime + (simon.length <= (current_midi.simon_start || 1) + (current_midi.simon_increment || 1) ? 1500 : 500));
       }
 
@@ -346,6 +366,8 @@ var init = () => {
           var note = notes[state];
           if (game > 0) {
             note.opacity(1);
+            if (model.state.show_fingering)
+              seq[state].fingering.opacity(1);
           }
           gs.fromTo(note.node, 0.1, {rotation: -20, scale: 1}, { rotation: 20, scale: 1.8, transformOrigin: "center", yoyo: true, repeat: 1, clearProps: "rotation" });
           /*note
@@ -578,6 +600,15 @@ var init = () => {
           }
           if (e.key == "e") {
             echo = !echo;
+          }
+          if (e.key == "f") {
+            try {
+              model.state.show_fingering = !model.state.show_fingering;
+              seq.forEach(x => x.fingering.opacity(model.state.show_fingering? x.shape.opacity() : 0));
+              require('fs').writeFileSync('./state.json', JSON.stringify(model.state));
+            } catch (e) {
+              console.log(e);
+            }
           }
           if (e.key == "p") {
             gameplayback();
