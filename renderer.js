@@ -150,25 +150,29 @@ var init = () => {
         }
       }
 
+      var shown = game > 0 ? 0 : 1;
+
       const interval_colours = ["blue", "red", "magenta", "green", "green", "blue", "red", "blue", "green", "green", "magenta", "red"]
-      if (x.chord && x.chord.length > 1) {
+      if (x.chord && x.chord.length > 1 && !x.chord.intervals) {
+        x.chord.intervals = [];
         x.chord.sort((a,b) => a.param1 - b.param1);
-        for (var i = 1; i < x.chord.length; i++) {
-          var a = x.chord[i - 1], b = x.chord[i];
+        for (var j = 1; j < x.chord.length; j++) {
+          var a = x.chord[j - 1], b = x.chord[j];
           var d = b.param1 - a.param1;
           var W = draw.plain((d % 12) + "'".repeat(d / 12));
           var r = W.bbox();
+          x.chord.intervals.push(W);
           W
             .font({
               family:   'Helvetica',
               size: 12
             })
             .fill(interval_colours[d % 12])
+            .opacity(model.state.show_fingering? 0 : shown)
             .move((x.playTime - t)*tadj - r.w/2 + scale/2, (high - a.param1 - offset - d / 2)*7/12*scale + r.h/4)
+            ;
         }
       }
-
-      var shown = game > 0 ? 0 : 1;
 
       W = draw.plain(fingering[i] || "")
         .font({
@@ -280,6 +284,7 @@ var init = () => {
         seq.map((x, i) => {
           var shown = i < simon.length ? 1 : 0;
           x.shape.opacity(shown);
+          x.intervals.forEach(x => x.opacity(model.state.show_fingering? 0 : shown));
           x.fingering.opacity(model.state.show_fingering? shown : 0);
         });
         var startTime = seq[0].playTime - 1000;
@@ -306,6 +311,7 @@ var init = () => {
           simon.playthrough = false;
           seq.forEach(x => {
             x.fingering.opacity(0);
+            x.intervals.forEach(x => x.opacity(0));
             x.shape.opacity(0);
           });
         }, endTime + (simon.length <= (current_midi.simon_start || 1) + (current_midi.simon_increment || 1) ? 1500 : 500));
@@ -368,6 +374,8 @@ var init = () => {
             note.opacity(1);
             if (model.state.show_fingering)
               seq[state].fingering.opacity(1);
+            else
+              seq[state].intervals.forEach(x => x.opacity(1));
           }
           gs.fromTo(note.node, 0.1, {rotation: -20, scale: 1}, { rotation: 20, scale: 1.8, transformOrigin: "center", yoyo: true, repeat: 1, clearProps: "rotation" });
           /*note
@@ -604,7 +612,11 @@ var init = () => {
           if (e.key == "f") {
             try {
               model.state.show_fingering = !model.state.show_fingering;
-              seq.forEach(x => x.fingering.opacity(model.state.show_fingering? x.shape.opacity() : 0));
+              seq.forEach(x => {
+                let shown = x.shape.opacity();
+                x.fingering.opacity(model.state.show_fingering? shown : 0)
+                x.intervals.forEach(x => x.opacity(model.state.show_fingering? 0 : shown));
+              })
               require('fs').writeFileSync('./state.json', JSON.stringify(model.state));
             } catch (e) {
               console.log(e);

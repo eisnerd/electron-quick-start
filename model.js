@@ -98,26 +98,32 @@ module.exports = {
   exercises: [{
     name: "Scale octave right CMaj",
     music: "scale_octave_right_cmaj.mid",
+    fingering: "123123454321321",
     tempo: 0.1
   }, {
     name: "Scale octave left CMaj",
     music: "scale_octave_left_cmaj.mid",
+    fingering: "123123454321321",
     tempo: 0.1
   }, {
     name: "Scale octave contrary CMaj",
     music: "scale_octave_contrary_cmaj.mid",
+    fingering: "1223311223344554433221133221",
     tempo: 0.1
   }, {
     name: "Scale octave parallel CMaj",
     music: "scale_octave_parallel_cmaj.mid",
+    fingering: "152433122133425142332112332415",
     tempo: 0.1
   }, {
     name: "Arp crab right CMaj",
     music: "arp_crab_right_cmaj.mid",
+    fingering: "1231231235231231231",
     tempo: 0.1
   }, {
     name: "Arp crab left CMaj",
     music: "arp_crab_left_cmaj.mid",
+    fingering: "1321321325321321321",
     offset: 12,
     tempo: 0.1
   }]
