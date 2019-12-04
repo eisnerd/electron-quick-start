@@ -56,6 +56,13 @@ module.exports = {
     notes: 37,
     tempo: 0.2
   }, {
+    name: "All the pretty little horses",
+    music: "all_the_pretty_little_horses.mid",
+    words: "hush a bye don't you cry go to sleep my lit- tle ba- by when you wake you shall have all the pret- ty lit- tle hor- ses blacks and bays dap- ples and grays all the pret- ty lit- le hor- ses",
+    trainer: x => x.track == 0,
+    offset: 2,
+    tempo: 0.2
+  }, {
     name: "Dear, if you change",
     music: "downland_songes_or_ayres_i-book_7_(c)icking-archive.mid",
     words: "dear i- i- if you change i'll ne- ver choose a- gain sweet if you shrink i'll ne- ver think of love fair if you fail i'll judge all beau- ty vain wise if too weak more wit i'll ne- ver proove dear sweet fair wise change shrink nor be not weak and on my faith my faith shall ne- ver break dear sweet fair wise change shrink nor be not weak and on my faith my faith shall ne- ver break",
