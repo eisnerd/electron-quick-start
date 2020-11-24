@@ -48,6 +48,15 @@ module.exports = {
     //tempo: 0.52 // without words
     tempo: 0.45
   }, {
+    name: "Wind the bobbin up",
+    music: "wind_the_bobbin_up.mid",
+    words: "wind the bobb- in up wind the bobb- in up pull pull clap clap clap wind it back a- gain wind it back a- gain pull pull clap clap clap point to the cei- ling point to the floor point to the win- dow point to the door clap your hands to- ge- ther one two three place them down up- on your knee",
+    fingering: "4542145421432214542145421432211123344431113322211112334431133221",
+    trainer: x => true,
+    playback: x => true,
+    offset: 0,
+    tempo: 0.4,
+  }, {
     name: "Give me oil in my lamp",
     music: "sing_hosanna.mid",
     words: "give me oil in my lamp keep me bur- ning give me oil in my lamp i pray give me oil in my lamp keep my bur- ning keep me bur- ning til the break of day",
